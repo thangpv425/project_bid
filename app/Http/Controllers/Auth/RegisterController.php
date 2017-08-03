@@ -68,7 +68,7 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
             'grant' => Config::get('constants.user_grant.user'),
-            'status' => Config::get('constants.user_status.active'),
+            'status' => Config::get('constants.user_status.de_active'),
             'avatar' => 'null',
         ]);
     }

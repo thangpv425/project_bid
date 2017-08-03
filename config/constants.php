@@ -1,18 +1,14 @@
 <?php
 
-/**
- * Contain all constants in project
- * @return Constant
- */
 return [
-    'user_grant' => [
+    'user_grant' => array(
         'admin' => '1',
         'user' => '0'
         // etc
-    ],
+    ),
 
-    'user_status' => [
+    'user_status' => array(
         'active' => '1',
         'de_active' => '0',
-    ]
+    )
 ];
