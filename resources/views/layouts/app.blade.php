@@ -12,12 +12,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 <body>
     <div id="app">
-        @include('layouts.header');
+        @include('layouts.header')
+        @include('layouts.slide')
         @yield('content')
-        @include('layouts.footer');
+        @include('layouts.footer')
     </div>
 
     <!-- Scripts -->

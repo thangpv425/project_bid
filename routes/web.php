@@ -18,3 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'User\UserController@index')->name('home');
+
+Route::prefix('mocup')->group(function(){
+	Route::get('home', function(){return view('layouts.home');});
+});
