@@ -44,26 +44,19 @@ class ResetPasswordController extends Controller {
     /**
      * show reset form
      * @param $userId
-     * @param null $token
-     * @param null $tokenType
+     * @param  $token
+     * @param  $tokenType
      * @return View
      */
-    public function showResetForm($userId, $token = null, $tokenType = null) {
+    public function showResetForm($userId, $token, $tokenType) {
 
-        $hash = $this->getHash($userId,$token, $tokenType);
-
-        if ($hash == null) {
-            return '404 not found';
-        }
-
-        return view('auth.passwords.reset')->with(
-            ['token' => $token,
-                'type' => $tokenType,
-                'user_id' => $userId,
-                ]
-        );
-
+        return view('auth.passwords.reset')->with([
+            'token' => $token,
+            'type' => $tokenType,
+            'user_id' => $userId,
+        ]);
     }
+
 
     /**
      * Reset password
@@ -75,7 +68,6 @@ class ResetPasswordController extends Controller {
 
         $this->validate($request, $this->rules(), $this->validationErrorMessages());
 
-
         try {
             //get hash from table
             $hash = $this->getHash(
@@ -83,51 +75,91 @@ class ResetPasswordController extends Controller {
                 $request->input('token'),
                 $request->input('type')
             );
+            if ($hash == null) {
+                return $this->sendFailResponse('Access denied');
+            }
 
-            //calculate time expire
-            $now = Carbon::now();
-
-            $expire = new Carbon($hash->expire_at);
-            if ($now > $expire) {
-                return redirect()->back()->with('error', 'Timeout!');
+            //validate time expire
+            if (!$this->validateTimeExpire($hash)) {
+                return $this->sendFailResponse('Access denied!');
             }
 
             //get user and change password
             $user = User::where('id','=',$request->input('user_id'))->firstOrFail();
             if ($user->email != $request->input('email')) {
-                return redirect()->back()->with('error', 'The email you entered does not match');
+                return $this->sendFailResponse('The email you entered does not match');
             }
 
-            //save user password to database
+            //else save user password to database
             $user->forceFill([
                 'password' => bcrypt($request->input('password')),
                 'remember_token' => Str::random(60),
             ])->save();
 
-            return redirect($this->redirectTo)
-                ->with('status', 'Reset password success!');
+            return $this->sendSuccessResponse('Reset password success!');
         } catch (ModelNotFoundException $exception) {
-            return redirect()->back()->with('error', 'Access denied');
+            return $this->sendFailResponse('Access denied');
         }
+    }
 
+    /**
+     * @param $userId
+     * @param $token
+     * @param $type
+     * @return Hash if existed , null if not existed
+     */
+
+    private function getHash($userId, $token, $type) {
+        try {
+            $hash = Hash::where('user_id', '=', $userId)
+                ->where('hash_key', '=', $token)
+                ->where('type', '=',$type)
+                ->firstOrFail();
+
+            return $hash;
+        } catch (ModelNotFoundException $exception) {
+            return null;
+        }
     }
 
 
     /**
-     * Get hash from hashs table
-     * @param $userId
-     * @param $token
-     * @param $type
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * send fail response when reset password
+     * @param $message
+     * @return \Illuminate\Http\RedirectResponse
      */
-
-    private function getHash($userId, $token, $type) {
-
-        return Hash::where('user_id', '=', $userId)
-            ->where('hash_key', '=', $token)
-            ->where('type', '=',$type)
-            ->firstOrFail();
+    private function sendFailResponse($message) {
+        return redirect()->back()->with('error', $message);
     }
 
+    /**
+     * send success response when reset password
+     * @param $message
+     */
+    private function sendSuccessResponse($message) {
+        return redirect($this->redirectPath())->with('status', $message);
+    }
+
+    /**
+     * validate reset password time expire
+     * @param Hash $hash
+     * @return bool
+     */
+    private function validateTimeExpire(Hash $hash) {
+        $now = Carbon::now();
+        $expire = new Carbon($hash->expire_at);
+        if ($now > $expire) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return route after reset password success
+     * @return string
+     */
+    protected function redirectPath() {
+        return $this->redirectTo;
+    }
 
 }

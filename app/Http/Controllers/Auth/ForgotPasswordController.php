@@ -53,6 +53,10 @@ class ForgotPasswordController extends Controller
             //send to mail reset link
             $user = User::where('email',$request->input('email'))->firstOrFail();
 
+            if ($user->status == Config::get('constants.user_status.de_active')) {
+                return $this->sendFailResponse('Email is not registered');
+            }
+
             $newHash = $this->createNewHash($user,$request);
 
             $mailData = array(
@@ -62,10 +66,10 @@ class ForgotPasswordController extends Controller
             Mail::to($request->input('email'))
                 ->send(new ForgotPasswordMailable($mailData));
 
-            return redirect()->back()->with('status', 'reset link sent to yours email!');
+            return $this->sendSuccessResponse('Reset link sent to yours email!');
 
         } catch (ModelNotFoundException $exception) {
-            return '404 not found';
+            return $this->sendFailResponse('Email is not registered');
         }
     }
 
@@ -83,6 +87,11 @@ class ForgotPasswordController extends Controller
         ]);
     }
 
+    /**create reset link
+     * @param Hash $hash
+     * @param $userId
+     * @return \Illuminate\Contracts\Routing\UrlGenerator|string
+     */
     private function createResetLink(Hash $hash, $userId) {
         return url(config('app.url').route('password.reset',
                 array(
@@ -92,5 +101,22 @@ class ForgotPasswordController extends Controller
                 )));
     }
 
+    /**
+     * Send fail response for a failed password reset link
+     * @param $message
+     * @return \Illuminate\Http\RedirectResponse
+     */
 
+    private function sendFailResponse($message) {
+        return redirect()->back()->with('error', $message);
+    }
+
+    /**
+     * Send success response for a failed password reset link
+     * @param $message
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function sendSuccessResponse($message) {
+        return redirect()->back()->with('status', $message);
+    }
 }
