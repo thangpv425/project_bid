@@ -32,11 +32,6 @@ class ResetPasswordController extends Controller {
      */
     protected $redirectTo = '/home';
 
-    /**
-     * Where to save hash for reset password
-     * @var null
-     */
-    protected $hash = null;
 
     /**
      * Create a new controller instance.
