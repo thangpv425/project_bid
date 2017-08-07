@@ -33,6 +33,12 @@ class ResetPasswordController extends Controller {
     protected $redirectTo = '/home';
 
     /**
+     * Where to save hash for reset password
+     * @var null
+     */
+    protected $hash = null;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -43,20 +49,27 @@ class ResetPasswordController extends Controller {
 
     /**
      * show reset form
-     * @param $userId
      * @param  $token
      * @param  $tokenType
      * @return View
      */
-    public function showResetForm($userId, $token, $tokenType) {
+    public function showResetForm($token, $tokenType) {
+
+        $hash = $this->getHash($token, $tokenType);
+
+        if ($hash == null ) {
+            return 'Reset password token not valid';
+        }
+
+        if (!$this->validateTimeExpire($hash)) {
+            return 'Reset password token expired!';
+        }
 
         return view('auth.passwords.reset')->with([
             'token' => $token,
             'type' => $tokenType,
-            'user_id' => $userId,
         ]);
     }
-
 
     /**
      * Reset password
@@ -69,24 +82,20 @@ class ResetPasswordController extends Controller {
         $this->validate($request, $this->rules(), $this->validationErrorMessages());
 
         try {
-            //get hash from table
-            $hash = $this->getHash(
-                $request->input('user_id'),
-                $request->input('token'),
-                $request->input('type')
-            );
-            if ($hash == null) {
-                return $this->sendFailResponse('Access denied');
+            $hash = $this->getHash($request->input('token'), $request->input('type'));
+
+            if ($hash == null){
+                return $this->sendFailResponse('Reset password token not valid');
             }
 
             //validate time expire
             if (!$this->validateTimeExpire($hash)) {
-                return $this->sendFailResponse('Access denied!');
+                return $this->sendFailResponse('Reset password token expired!!');
             }
 
             //get user and change password
-            $user = User::where('id','=',$request->input('user_id'))->firstOrFail();
-            if ($user->email != $request->input('email')) {
+            $user = User::where('email','=',$request->input('email'))->firstOrFail();
+            if ($user->id != $hash->user_id) {
                 return $this->sendFailResponse('The email you entered does not match');
             }
 
@@ -103,19 +112,16 @@ class ResetPasswordController extends Controller {
     }
 
     /**
-     * @param $userId
      * @param $token
      * @param $type
      * @return Hash if existed , null if not existed
      */
 
-    private function getHash($userId, $token, $type) {
+    private function getHash($token, $type) {
         try {
-            $hash = Hash::where('user_id', '=', $userId)
-                ->where('hash_key', '=', $token)
+            $hash = Hash::where('hash_key', '=', $token)
                 ->where('type', '=',$type)
                 ->firstOrFail();
-
             return $hash;
         } catch (ModelNotFoundException $exception) {
             return null;
@@ -135,6 +141,7 @@ class ResetPasswordController extends Controller {
     /**
      * send success response when reset password
      * @param $message
+     * @return \Illuminate\Http\RedirectResponse
      */
     private function sendSuccessResponse($message) {
         return redirect($this->redirectPath())->with('status', $message);
@@ -161,5 +168,4 @@ class ResetPasswordController extends Controller {
     protected function redirectPath() {
         return $this->redirectTo;
     }
-
 }

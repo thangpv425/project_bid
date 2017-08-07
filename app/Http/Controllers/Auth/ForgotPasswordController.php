@@ -95,7 +95,6 @@ class ForgotPasswordController extends Controller
     private function createResetLink(Hash $hash, $userId) {
         return url(config('app.url').route('password.reset',
                 array(
-                    'user_id' => $userId,
                     'hash_key' => $hash->hash_key,
                     'type' => $hash->type,
                 )));
