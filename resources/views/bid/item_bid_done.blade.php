@@ -1,7 +1,7 @@
 <div class="item">
 	<div class="img-cover">
 		<a href="#">
-			<img src="{{Storage::url('image/zippo.jpg')}}" class="img-responsive">
+			<img src="{{asset('/storage/image/zippo.jpg')}}" class="img-responsive">
 		</a>
 	</div>
 	<div class="item-info">
