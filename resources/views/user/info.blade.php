@@ -1,6 +1,6 @@
 @extends('user.index')
 @section('user-page')
-	<div class="user-info">
+	<div class="user-info" data-menu='3'>
 		<div class="row user-info-bid">
 			<div class="col-sm-3">
 				<div class="avatar">
@@ -74,5 +74,11 @@
 				</div>
 			</form>
 		</div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var menu = $('.user-info').attr('data-menu');
+				$('.user-page-menu li:nth-child('+menu+')').addClass('holder');
+			})
+		</script>
 	</div>
 @endsection

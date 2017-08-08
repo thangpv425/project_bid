@@ -27,7 +27,7 @@
 					<span class="hightest-bid-user">Linh Dang</span>
 				</div>
 				<div class="pull-right">
-					<a href="#" class="btn price-button view-more">Xem phien dau</a>
+					<a href="{{route('mocup-bid-current')}}" class="btn price-button view-more">Xem phien dau</a>
 				</div>
 			</div>
 		</div>
