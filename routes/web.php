@@ -31,3 +31,11 @@ Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('password/reset/{hash_key}', 'Auth\ResetPasswordController@showResetForm')
     ->name('password.reset');
+
+Route::prefix('mocup')->group(function(){
+	Route::get('home', function(){return view('layouts.home');});
+	Route::get('bid-current', function(){return view('bid.bid_current');});
+	Route::get('bid-done', function(){return view('bid.bid_done');});
+	Route::get('bid-manager', function(){return view('user.bid-manager');});
+	Route::get('user-info', function(){return view('user.info');});
+});
