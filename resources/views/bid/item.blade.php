@@ -1,7 +1,7 @@
 <div class="item">
 	<div class="img-cover">
 		<a href="#">
-			<img src="{{Storage::url('image/zippo.jpg')}}" class="img-responsive">
+			<img src="{{asset('/storage/image/zippo.jpg')}}" class="img-responsive">
 		</a>
 	</div>
 	<div class="item-info">
@@ -10,7 +10,7 @@
 			<div class="clearfix">
 				<div class="pull-left">
 					<a href="#">
-						<img src="{{Storage::url('image/zippo.jpg')}}" class="img-circle" style="width: 20px;height: 20px">
+						<img src="{{asset('/storage/image/zippo.jpg')}}" class="img-circle" style="width: 20px;height: 20px">
 						Nguoi ban
 					</a>
 				</div>

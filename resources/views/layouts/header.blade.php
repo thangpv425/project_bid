@@ -12,7 +12,7 @@
 
 			<!-- Branding Image -->
 			<a class="navbar-brand" href="{{ url('/') }}">
-				<img src="{{Storage::url('image/logo.svg')}}">
+				<img src="{{asset('/storage/image/logo.svg')}}">
 			</a>
 		</div>
 
@@ -40,29 +40,29 @@
 						<ul class="dropdown-menu" role="menu">
 							<li>
 								<a href="#">
-									<img src="{{Storage::url('image/trangcanhan.svg')}}" class="icon-menu">Trang ca nhan
+									<img src="{{asset('/storage/image/trangcanhan.svg')}}" class="icon-menu">Trang ca nhan
 								</a>
 							</li>
 							<li>
 								<a href="#">
-									<img src="{{Storage::url('image/quanli.svg')}}" class="icon-menu">Quan li giao dich
+									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Quan li giao dich
 								</a>
 							</li>
 							<li>
 								<a href="#">
-									<img src="{{Storage::url('image/phiendau.svg')}}" class="icon-menu">Phien dau tham gia
+									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Phien dau tham gia
 								</a>
 							</li>
 							<li>
 								<a href="#">
-									<img src="{{Storage::url('image/chinhsua.svg')}}" class="icon-menu">Chinh sua tai khoan
+									<img src="{{asset('/storage/image/chinhsua.svg')}}" class="icon-menu">Chinh sua tai khoan
 								</a>
 							</li>
 							<li>
 								<a href="{{ route('logout') }}"
 									onclick="event.preventDefault();
 											 document.getElementById('logout-form').submit();">
-									<img src="{{Storage::url('image/thoat.svg')}}" class="icon-menu">
+									<img src="{{asset('/storage/image/thoat.svg')}}" class="icon-menu">
 									Logout
 								</a>
 
