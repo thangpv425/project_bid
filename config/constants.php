@@ -22,9 +22,9 @@ return [
      * time during when change mail, register, forgot password
      */
     'time_during' => array(
-        'register' => 1,
-        'change_email' => 1,
-        'forgot_password' => 1,
+        'register' => 5,
+        'change_email' => 5,
+        'forgot_password' => 5,
     )
 
 ];
