@@ -21,4 +21,8 @@ Route::get('/home', 'User\UserController@index')->name('home');
 
 Route::prefix('mocup')->group(function(){
 	Route::get('home', function(){return view('layouts.home');});
+	Route::get('bid-current', function(){return view('bid.bid_current');});
+	Route::get('bid-done', function(){return view('bid.bid_done');});
+	Route::get('bid-manager', function(){return view('user.bid-manager');});
+	Route::get('user-info', function(){return view('user.info');});
 });
