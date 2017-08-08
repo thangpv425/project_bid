@@ -20,13 +20,13 @@ class EloquentHashRepository implements HashRepositoryInterface {
      */
     protected $model;
 
+
     /**
      * EloquentHashRepository constructor.
-     * @param Hash $model
+     * @param User $model
      */
-    public function __construct() {
-        $this->app = new App();
-        $this->makeModel();
+    public function __construct(Hash $model) {
+        $this->model = $model;
     }
 
     /**
@@ -52,18 +52,4 @@ class EloquentHashRepository implements HashRepositoryInterface {
             return null;
         }
     }
-
-    public function makeModel() {
-        $model = $this->app->make($this->model());
-        if (!$model instanceof Model) {
-            throw new Exception("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
-        }
-
-        return $this->model = $model;
-    }
-
-    public function model() {
-        return Hash::class;
-    }
-
 }

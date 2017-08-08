@@ -57,7 +57,6 @@ class ResetPasswordController extends Controller {
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-
     public function reset(Request $request) {
 
         $this->validate($request, [

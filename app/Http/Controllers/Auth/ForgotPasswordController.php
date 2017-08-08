@@ -31,11 +31,7 @@ class ForgotPasswordController extends Controller
      * @var
      */
     private $hashRepository;
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+
 
     /**
      * @var
@@ -47,6 +43,9 @@ class ForgotPasswordController extends Controller
      */
     private $userRepository;
 
+    /**
+     * Create a new controller instance.
+     */
     public function __construct(HashRepositoryInterface $hashRepository,
                                 UserRepositoryInterface $userRepository,
                                 MailManager $mailManager) {
@@ -58,29 +57,22 @@ class ForgotPasswordController extends Controller
 
 
     /**
-     * Display the form to request a password reset link.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function showLinkRequestForm() {
+    public function show() {
         return view('auth.passwords.email');
     }
 
     /**
-     * Send reset link to email
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|string
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function sendResetLinkEmail(Request $request) {
+    public function sendMail(Request $request) {
         $this->validateEmail($request);
 
         $user = $this->userRepository->getUserByEmail($request->input('email'));
 
-        if ($user == null) {
-            return redirect()->back()->with('error','Email is not registered');
-        }
-
-        if ($user->status == Config::get('constants.user_status.de_active')) {
+        if ($user == null || $user->status == Config::get('constants.user_status.de_active')) {
             return redirect()->back()->with('error','Email is not registered');
         }
 
@@ -94,7 +86,10 @@ class ForgotPasswordController extends Controller
         $newHash = $this->hashRepository->create($hashData);
 
         $mailData = array(
-            'link' => $this->createResetLink($newHash->hash_key),
+            'link' => url(config('app.url').route('password.reset',
+                    array(
+                        'hash_key' => $newHash->hash_key,
+                    ))),
         );
 
         $this->mailManager->send($request->input('email'),
@@ -103,17 +98,4 @@ class ForgotPasswordController extends Controller
         return redirect()->back()->with('status','Reset password link sent to mail');
 
     }
-
-    /**create reset link
-     * @param Hash $hash
-     * @param $userId
-     * @return \Illuminate\Contracts\Routing\UrlGenerator|string
-     */
-    private function createResetLink($hashKey) {
-        return url(config('app.url').route('password.reset',
-                array(
-                    'hash_key' => $hashKey,
-                )));
-    }
-
 }

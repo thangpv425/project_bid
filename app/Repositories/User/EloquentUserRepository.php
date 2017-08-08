@@ -19,9 +19,8 @@ class EloquentUserRepository implements UserRepositoryInterface {
      */
     protected $model;
 
-    public function __construct() {
-        $this->app = new App();
-        $this->makeModel();
+    public function __construct(User $model) {
+        $this->model = $model;
     }
 
     /**
