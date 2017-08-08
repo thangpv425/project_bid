@@ -13,6 +13,12 @@
                         </div>
                     @endif
 
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                     <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
                         {{ csrf_field() }}
 
