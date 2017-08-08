@@ -13,11 +13,12 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
 </head>
 <body>
     <div id="app">
         @include('layouts.header')
-        @include('layouts.slide')
         @yield('content')
         @include('layouts.footer')
     </div>

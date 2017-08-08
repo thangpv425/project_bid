@@ -11,7 +11,7 @@
 			</button>
 
 			<!-- Branding Image -->
-			<a class="navbar-brand" href="{{ url('/') }}">
+			<a class="navbar-brand" href="{{route('mocup-home')}}">
 				<img src="{{asset('/storage/image/logo.svg')}}">
 			</a>
 		</div>
@@ -44,7 +44,7 @@
 								</a>
 							</li>
 							<li>
-								<a href="#">
+								<a href="{{route('mocup-bid-manager')}}">
 									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Quan li giao dich
 								</a>
 							</li>
@@ -54,7 +54,7 @@
 								</a>
 							</li>
 							<li>
-								<a href="#">
+								<a href="{{route('mocup-user-info')}}">
 									<img src="{{asset('/storage/image/chinhsua.svg')}}" class="icon-menu">Chinh sua tai khoan
 								</a>
 							</li>

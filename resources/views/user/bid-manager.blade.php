@@ -1,6 +1,6 @@
 @extends('user.index')
 @section('user-page')
-	<div class="bid-manager-tab">
+	<div class="bid-manager-tab" data-menu='1'>
 		<ul class="nav nav-tabs text-center">
 		    <li class="active"><a data-toggle="tab" href="#home">Đang đấu giá</a></li>
 		    <li><a data-toggle="tab" href="#menu1">Đấu giá thành công</a></li>
@@ -37,4 +37,11 @@
 		    </div>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var menu = $('.bid-manager-tab').attr('data-menu');
+			$('.user-page-menu li:nth-child('+menu+')').addClass('holder');
+		})
+	</script>
 @endsection

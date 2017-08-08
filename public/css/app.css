@@ -269,7 +269,7 @@ body{
 }
 .user-page-menu{
 	background-color: #fff;
-	padding: 15px 20px 100px;
+	padding: 15px 20px;
 	list-style: none;
 }
 .user-page-menu li{
@@ -355,4 +355,11 @@ body{
     font-weight: 700;
     font-style: normal;
     margin: 0 0 15px;
+}
+.user-info,
+.change-email,
+.change-password,
+.delete-account{
+	background-color: white;
+	padding: 20px;
 }
