@@ -27,7 +27,7 @@ class ForgotPasswordController extends Controller {
     /**
      * @var
      */
-    private $hashRepository;
+    private $hash;
 
 
     /**
@@ -38,7 +38,7 @@ class ForgotPasswordController extends Controller {
     /**\
      * @var
      */
-    private $userRepository;
+    private $user;
 
     /**
      * ForgotPasswordController constructor.
@@ -46,12 +46,12 @@ class ForgotPasswordController extends Controller {
      * @param UserRepositoryInterface $userRepository
      * @param MailManager $mailManager
      */
-    public function __construct(HashRepositoryInterface $hashRepository,
-                                UserRepositoryInterface $userRepository,
+    public function __construct(HashRepositoryInterface $hash,
+                                UserRepositoryInterface $user,
                                 MailManager $mailManager) {
         $this->middleware('guest');
-        $this->hashRepository = $hashRepository;
-        $this->userRepository = $userRepository;
+        $this->hash= $hash;
+        $this->user = $user;
         $this->mailManager = $mailManager;
     }
 
@@ -69,7 +69,7 @@ class ForgotPasswordController extends Controller {
     public function sendMail(Request $request) {
         $this->validate($request, ['email' => 'required|email']);
 
-        $user = $this->userRepository->getUserByEmail($request->input('email'));
+        $user = $this->user->getUserByEmail($request->input('email'));
 
         if ($user == null || $user->status == Config::get('constants.user_status.inactive')) {
             $message = array(
@@ -84,7 +84,7 @@ class ForgotPasswordController extends Controller {
                 'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
             );
 
-            $newHash = $this->hashRepository->create($hashData);
+            $newHash = $this->hash->create($hashData);
 
             $mailData = array(
                 'link' => url(config('app.url').route('password.reset',
@@ -114,7 +114,7 @@ class ForgotPasswordController extends Controller {
         $now = Carbon::now();
         $userStatus = Config::get('constants.user_status.active');
 
-        $hash = $this->hashRepository->getHash($hashKey,$hashType,$now,$userStatus);
+        $hash = $this->hash->getHash($hashKey,$hashType,$now,$userStatus);
         if ($hash != null) {
             return view('auth.passwords.reset')->with('hashKey',$hashKey);
         }
@@ -128,7 +128,7 @@ class ForgotPasswordController extends Controller {
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function reset(Request $request) {
+    public function forgot(Request $request) {
 
         $this->validate($request, [
             'password' => 'required|min:6|confirmed',
@@ -140,13 +140,13 @@ class ForgotPasswordController extends Controller {
         $now = Carbon::now();
         $userStatus = Config::get('constants.user_status.active');
 
-        $hash = $this->hashRepository->getHash($hashKey,$hashType,$now,$userStatus);
+        $hash = $this->hash->getHash($hashKey,$hashType,$now,$userStatus);
         if ($hash == null) {
             //TODO: make view for not valid token
             return redirect()->back()->with('error', 'Hash key not valid or timeout');
         }
 
-        $this->userRepository->update($hash->user_id,[
+        $this->user->update($hash->user_id,[
             'password' => bcrypt($request->input('password')),
             'remember_token' => Str::random(60),
         ]);

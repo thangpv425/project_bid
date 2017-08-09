@@ -27,7 +27,7 @@ Route::get('/home', 'User\UserController@index')->name('home');
 
 Route::post('password/email', 'Auth\ForgotPasswordController@sendMail')->name('password.email');
 Route::get('password/reset', 'Auth\ForgotPasswordController@show')->name('password.request');
-Route::post('password/reset', 'Auth\ForgotPasswordController@reset');
+Route::post('password/reset', 'Auth\ForgotPasswordController@forgot');
 Route::get('password/reset/{hash_key}', 'Auth\ForgotPasswordController@showResetForm')
     ->name('password.reset');
 

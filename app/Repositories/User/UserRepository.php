@@ -3,16 +3,15 @@ namespace App\Repositories\User;
 
 use App\User;
 
-class EloquentUserRepository implements UserRepositoryInterface {
+class UserRepository implements UserRepositoryInterface {
     /**
      * @param $email
      * @return \App\User
      */
     public function getUserByEmail($email) {
-        $users = User::where('email', '=', $email)
-            ->limit(1)
-            ->get();
-        return $users->isEmpty() ? null : $users->first();
+        $user = User::where('email', '=', $email)
+            ->first();
+        return $user ? $user : null;
     }
 
     /**
