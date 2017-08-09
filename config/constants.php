@@ -9,6 +9,22 @@ return [
 
     'user_status' => array(
         'active' => '1',
-        'de_active' => '0',
+        'inactive' => '0',
+    ),
+
+    'hash_type' => array(
+        'register' => '1',
+        'change_email' => '2',
+        'forgot_password' => '3',
+    ),
+
+    /*
+     * time during when change mail, register, forgot password
+     */
+    'time_during' => array(
+        'register' => 5,
+        'change_email' => 5,
+        'forgot_password' => 5,
     )
+
 ];
