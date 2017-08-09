@@ -42,8 +42,8 @@ class ForgotPasswordController extends Controller {
 
     /**
      * ForgotPasswordController constructor.
-     * @param HashRepositoryInterface $hashRepository
-     * @param UserRepositoryInterface $userRepository
+     * @param HashRepositoryInterface $hash
+     * @param UserRepositoryInterface $user
      * @param MailManager $mailManager
      */
     public function __construct(HashRepositoryInterface $hash,
@@ -69,7 +69,7 @@ class ForgotPasswordController extends Controller {
     public function sendMail(Request $request) {
         $this->validate($request, ['email' => 'required|email']);
 
-        $user = $this->user->getUserByEmail($request->input('email'));
+        $user = $this->user->getActiveUserByEmail($request->input('email'));
 
         if ($user == null || $user->status == Config::get('constants.user_status.inactive')) {
             $message = array(
