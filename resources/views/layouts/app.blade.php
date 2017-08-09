@@ -18,7 +18,9 @@
 </head>
 <body>
     <div id="app">
-        @include('layouts.header')
+        @if(!Request::is('admin/*'))
+            @include('layouts.header')
+        @endif
         @yield('content')
         @include('layouts.footer')
     </div>

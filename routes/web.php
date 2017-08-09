@@ -43,3 +43,17 @@ Route::prefix('mocup')->group(function(){
 	Route::get('list-mail', function(){return view('user.list_mail');})->name('mocup-list-mail');
 
 });
+
+Route::prefix('admin')->group(function(){
+	Route::get('/', function(){return view('admin.index');})->name('admin');
+	Route::get('login', function(){return view('admin.login');})->name('admin-login');
+	Route::get('dashboard', function(){return view('admin.dashboard');})->name('admin-dashboard');
+	Route::get('users', function(){return view('admin.user.list');})->name('admin-users');
+	Route::get('products', function(){return view('admin.product.list');})->name('admin-product');
+	Route::get('products/create', function(){return view('admin.product.create');})->name('admin-product-create');
+	Route::get('bids', function(){return view('admin.bid.list');})->name('admin-bid');
+	Route::get('bids/create', function(){return view('admin.bid.create');})->name('admin-bid-create');
+	Route::get('categories', function(){return view('admin.category.list');})->name('admin-category');
+	Route::get('categories/create', function(){return view('admin.category.create');})->name('admin-category-create');
+	Route::get('orders', function(){return view('admin.order.list');})->name('admin-order');
+});
