@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+	@include('layouts.slide')
 	<div class="home">
 		<div class="container">
 			<h1>Các sản phẩm đang đấu giá</h1>

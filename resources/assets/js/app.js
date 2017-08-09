@@ -6,7 +6,11 @@
  */
 
 require('./bootstrap');
-
+require('./metisMenu');
+require('./raphael');
+require('./morris');
+require('./morris-data');
+require('./admin');
 window.Vue = require('vue');
 
 /**

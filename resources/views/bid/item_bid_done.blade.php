@@ -15,7 +15,7 @@
 					<span class="bid-count">8 phien dau</span>
 				</div>
 				<div class="pull-right">
-					<a href="#" class="btn price-button view-more">Xem phien dau</a>
+					<a href="{{route('mocup-bid-done')}}" class="btn price-button view-more">Xem phien dau</a>
 				</div>
 			</div>
 		</div>

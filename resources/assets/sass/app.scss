@@ -7,3 +7,363 @@
 
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "node_modules/font-awesome/scss/font-awesome.scss";
+@import "admin.scss";
+body{
+	font-family: 'Roboto', sans-serif;
+	background-color: #ebeef0;
+}
+/*----header------*/
+.navbar-brand{
+	padding: 5px 15px;
+}
+
+.dropdown-menu a{
+	font-size: 12px;
+}
+.icon-menu{
+	width: 15px;
+    height: 15px;
+    margin-right: 6px;
+}
+
+/*-------slide home---------*/
+
+.slide-home{
+	height: 300px
+}
+
+.vertical-middle{
+	vertical-align: middle;
+    display: table-cell;
+    height: 300px;
+}
+
+.content-info{
+	margin-top: 100px;
+}
+
+.content-info h1{
+	margin: 0;
+    padding: 0;
+    font-weight: 700;
+    font-size: 38px;
+    color: #fff;
+}
+
+.content-info p{
+	color: #fff;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
+}
+
+/*-------home content------*/
+.item{
+	margin-bottom: 25px;
+    background: #fff;
+    border-radius: 2px;
+    border: 1px solid #d5d7d7;
+}
+
+.item .description{
+	text-decoration: none;
+    font-size: 14px;
+    color: #2f3639;
+    font-weight: 500;
+    font-style: normal;
+    line-height: 20px;
+    max-height: 40px;
+    height: 100%;
+    height: 40px;
+    overflow: hidden;
+    margin-left: 10px;
+}
+
+.item-info .clearfix{
+	margin: 10px;
+}
+.item-info-top .pull-right span{
+	display: block;
+}
+.item-info-top .current-time{
+    font-size: 16px;
+    color: #565b5e;
+    font-weight: 700;
+    font-style: normal;
+}
+.bid-count{
+    font-size: 12px;
+    color: #565b5e;
+    font-weight: 400;
+    font-style: normal;
+}
+.item-info-bottom .clearfix{
+	border-top: 1px solid #d5d7d7;
+}
+.item-info-bottom span{
+	display: block;
+}
+
+.cost-current{
+    font-size: 25px;
+    color: #f5a623;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
+}
+
+.hightest-bid-user{
+	color: #9ebc2f;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.btn.view-more{
+	width: 127px;
+    height: 40px;
+    float: right;
+    background-image: none;
+    font-weight: 600;
+    border: 1px solid #75a13e;
+    border-radius: 4px;
+    color: #75a13e;
+    margin-top: 10px;
+}
+
+
+/*--------bib detail--------*/
+.bid-detail{
+	margin-top: 20px;
+}
+.product,.bid{
+	background-color: white;
+    border: 1px solid #d5d7d7;
+    padding-top: 15px;
+}
+.product-name{
+	margin-top: 20px;
+	margin-bottom:15px;
+	font-size: 18px;
+    color: #2f3639;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 24px;
+}
+.product .product-owner{
+	margin-bottom: 10px;
+}
+.product .product-owner-name{
+	font-size: 14px;
+    color: #2f3639;
+    font-weight: 500;
+    font-style: normal;
+}
+.bid-detail .avatar{
+	width: 32px;
+	height: 32px;
+}
+
+.bid{
+	padding: 0 15px;
+}
+.bid-info .time{
+	margin-top: 20px;
+}
+.bid-info .time .time-day,
+.bid-info .time .time-hour{
+	font-size: 36px;
+	color: #2f3639;
+    font-weight: 600;
+    font-style: normal;
+}
+.bid-info .time-end{
+	border-bottom: 1px solid #d5d7d7;
+	padding-bottom: 25px;
+}
+
+.bid-current{
+	margin-top:25px;
+}
+.bid-current  .title{
+	margin-top: 20px;
+	display: block;
+}
+.bid-current  .bid-current-info{
+	font-size: 36px;
+    color: #f5a623;
+    font-weight: 700;
+    font-style: normal;
+}
+.bid-current .hightest-bid-user{
+	color: #44494c;
+	font-weight: 600;
+	font-size: 16px;
+}
+.bid .input-bid input{
+	border: 1px solid #d5d7d7;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
+    border-radius: 4px;
+    width: 80%;
+    height: 40px;
+    padding-left: 10px;
+}
+.bid .input-bid button{
+	background-color: #75a13e;
+    border: none;
+    height: 40px;
+    margin-left: -5px;
+    width: 20%;
+    color: white;
+    border-radius: 0 4px 4px 0;
+}
+
+.user-bid-info .time-hour,
+.user-bid-info .time-day{
+	margin: 0;
+}
+.user-bid-info .col-xs-6{
+	margin-top: 6px;
+}
+.user-bid-info .col-xs-2{
+	margin-top: 11px;
+}
+
+.bid-done .avatar{
+	margin: 20px auto;
+	width: 140px;
+	height: 140px;
+	position: relative;
+}
+.bid-done .avatar .vong{
+	position: absolute;
+    top: -8px;
+}
+.bid-done img.img-circle{
+	width: 100px;
+	height: 100px;
+}
+.bid-done span{
+	display: block;
+}
+.bid-done .user-win{
+	margin-top: 24px;
+    font-size: 22px;
+    color: #74a040;
+    font-weight: 400;
+}
+.bid-done .bid-cost-done{
+	margin-top: 6px;
+    font-size: 30px;
+    color: #f5a623;
+    font-weight: 400;
+}
+
+
+/*------user manager---------*/
+.user-page{
+	margin-top: 30px;
+}
+.user-page .tab-content{
+	margin-top: 20px;
+	padding: 20px;
+}
+.user-page-menu{
+	background-color: #fff;
+	padding: 15px 20px;
+	list-style: none;
+}
+.user-page-menu li{
+	margin: 0;
+	padding: 10px 0;
+
+}
+.user-page-menu li a{
+	font-size: 14px;
+    color: #4f5152;
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+}
+.user-page-menu li.holder a{
+	color: #75a13e;
+
+}
+.bid-manager-tab .nav-tabs{
+	background-color: white;
+}
+.bid-manager-tab .nav-tabs li{
+	width: 33.33333333%;
+}
+.bid-manager-tab .nav-tabs li.active a{
+	background-color: #75a13e;
+	color: white;
+	border-radius: 0; 
+	border: none !important;
+}
+.bid-manager-tab .tab-content{
+	background-color: white;
+}
+
+
+/*--------user info page----------*/
+.user-info .user-info-bid .avatar{
+	padding: 0 20px;
+}
+.user-info .user-info-bid .avatar button{
+	width: 100%;
+}
+.user-info .user-info-bid .name{
+	font-size: 20px;
+    color: #9ebc2f;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 1.69px;
+    line-height: 26px;
+    margin-top: 0;
+}
+.user-info .user-info-bid .pull-left{
+	width: 50%;
+	border-left: 3px solid #9ebc2f;
+	padding-left: 10px;
+}
+.user-info .user-info-bid .pull-left span{
+	display: block;
+}
+.user-info .user-info-bid .pull-left span:nth-child(1){
+	font-size: 24px;
+    color: #9ebc2f;
+    font-weight: 700;
+    line-height: 24px;
+}
+.user-info .user-info-bid .pull-left span:nth-child(2){
+	font-size: 14px;
+    color: #4f5152;
+    font-weight: 700;
+    line-height: 14px;
+}
+
+.user-info-commom .pull-left{
+	width: 50%;
+}
+.user-info-commom{
+	margin-top: 20px;
+	padding: 0 20px;
+}
+.user-info-commom .title{
+	font-size: 18px;
+    color: #9ebc2f;
+    font-weight: 700;
+    font-style: normal;
+    margin: 0 0 15px;
+}
+.user-info,
+.change-email,
+.change-password,
+.delete-account{
+	background-color: white;
+	padding: 20px;
+}
