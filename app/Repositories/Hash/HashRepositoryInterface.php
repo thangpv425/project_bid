@@ -3,17 +3,25 @@
 namespace App\Repositories\Hash;
 
 interface HashRepositoryInterface {
-
-    /**create new hash
-     * @param array $attributes
+    /**
+     * @param $hashKey
+     * @return mixed
      */
-    function create(array $attributes);
+    function getHashByKey($hashKey);
 
     /**
-     * get hash by hash key
      * @param $hashKey
-     * @return App/Hash
+     * @param $hashType
+     * @param $now
+     * @param $userStatus
+     * @return Hash
      */
-    function getHashByHashKey($hashKey);
+    function getHash($hashKey, $hashType, $now, $userStatus);
+
+    /**
+     * @param array $attributes
+     * @return Hash
+     */
+    function create(array $attributes);
 
 }

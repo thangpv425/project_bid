@@ -9,7 +9,7 @@ return [
 
     'user_status' => array(
         'active' => '1',
-        'de_active' => '0',
+        'inactive' => '0',
     ),
 
     'hash_type' => array(

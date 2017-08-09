@@ -24,12 +24,11 @@ Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('re
 Route::post('register', 'Auth\RegisterController@register');
 
 Route::get('/home', 'User\UserController@index')->name('home');
-Route::get('password/reset/{user_id}/{token}/{token_type}', 'Auth\ResetPasswordController@showResetForm')
-    ->name('password.reset');
+
 Route::post('password/email', 'Auth\ForgotPasswordController@sendMail')->name('password.email');
 Route::get('password/reset', 'Auth\ForgotPasswordController@show')->name('password.request');
-Route::post('password/reset', 'Auth\ResetPasswordController@reset');
-Route::get('password/reset/{hash_key}', 'Auth\ResetPasswordController@showResetForm')
+Route::post('password/reset', 'Auth\ForgotPasswordController@reset');
+Route::get('password/reset/{hash_key}', 'Auth\ForgotPasswordController@showResetForm')
     ->name('password.reset');
 
 Route::prefix('mocup')->group(function(){

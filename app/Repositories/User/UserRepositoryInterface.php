@@ -15,4 +15,9 @@ interface UserRepositoryInterface {
      */
     function getUserById($id);
 
+    /**
+     * @param $id
+     * @param array $attributes
+     */
+    public function update($id, array $attributes);
 }
