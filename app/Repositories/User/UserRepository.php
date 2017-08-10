@@ -2,6 +2,7 @@
 namespace App\Repositories\User;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 
 class UserRepository implements UserRepositoryInterface {
@@ -47,8 +48,29 @@ class UserRepository implements UserRepositoryInterface {
      * @param array $attributes
      * @return User
      */
-    function create(array $attributes) {
+    public function create(array $attributes) {
         return User::create($attributes);
+    }
+
+    /**
+     * Check mail valid or not
+     * @param $email
+     * @return bool
+     */
+    public function checkMail($email) {
+
+        $user = User::leftJoin('hashs', 'users.id', '=', 'hashs.user_id')
+            ->where('users.status', '=', Config::get('constants.user_status.block'))
+            ->orWhere(function($query) use ($email){
+              $query->where('hashs.expire_at', '>=', Carbon::now())
+                  ->where('users.status', '=', Config::get('constants.user_status.inactive'))
+                  ->where('users.email', '=', $email)
+                  ->where('hashs.type', '=', Config::get('constants.hash_type.register'));
+            })
+            ->orWhere('users.status', '=', Config::get('constants.user_status.active'))
+            ->first();
+
+        return $user ? false : true;
     }
 
 }

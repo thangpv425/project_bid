@@ -2,6 +2,7 @@
 
 namespace App\Repositories\User;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 interface UserRepositoryInterface {
@@ -34,4 +35,10 @@ interface UserRepositoryInterface {
      * @return User
      */
     function create(array $attributes);
+
+    /**
+     * @param $email
+     * @return bool
+     */
+    function checkMail($email);
 }

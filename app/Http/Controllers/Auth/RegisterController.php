@@ -77,7 +77,7 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        if (!$this->validateEmail($request->input('email'))) {
+        if ($this->user->checkMail($request->input('email')) == false) {
             $message = array(
                 'type' => 'error',
                 'data' => 'Email already taken'
@@ -147,30 +147,6 @@ class RegisterController extends Controller
 
         //TODO: make view for this
         return 'Your account has been activated';
-    }
-
-
-    protected function validateEmail($email) {
-        $users = $this->user->getUsersByEmail($email);
-        $active = Config::get('constants.user_status.active');
-        $inactive = Config::get('constants.user_status.inactive');
-        $hashType = Config::get('constants.hash_type.register');
-        $now = Carbon::now();
-        $hash = null;
-
-        if (!$users->isEmpty()) {
-            foreach ($users as $user) {
-                if ($user->status == $active) {
-                    return false;
-                } else {
-                    $hash = $this->hash->getHashByUserId($user->id, $hashType, $now, $inactive);
-                    if ($hash != null) {
-                       return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
 }
