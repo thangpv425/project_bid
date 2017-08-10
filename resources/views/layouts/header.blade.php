@@ -31,7 +31,7 @@
 				<li><a href="#">Nuoc hoa</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				@if(1)
+				@if(0)
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							aaaaaaaa <span class="caret"></span>
@@ -73,11 +73,9 @@
 						</ul>
 					</li>
 				@else
-					<li><a href="#">Dang nhap</a></li>
-					<li><a href="#">Dang ki</a></li>
-				@endif
-				
-				
+					<li><a class="btn-login" href="{{route('login')}}">Dang nhap</a></li>
+					<li><a class="btn-rigister btn-green" href="{{route('register')}}">Dang ki</a></li>
+				@endif			
 			</ul>
 		</div>
 	</div>
