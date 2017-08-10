@@ -15,19 +15,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::get('login', 'Auth\LoginController@show')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
-Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+Route::get('register', 'Auth\RegisterController@show')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+Route::get('active_user/{hash_key}', 'Auth\RegisterController@active')->name('register.active');
 
 Route::get('/home', 'User\UserController@index')->name('home');
 
 Route::post('password/email', 'Auth\ForgotPasswordController@sendMail')->name('password.email');
 Route::get('password/reset', 'Auth\ForgotPasswordController@show')->name('password.request');
-Route::post('password/reset', 'Auth\ForgotPasswordController@reset');
+Route::post('password/reset', 'Auth\ForgotPasswordController@forgot');
 Route::get('password/reset/{hash_key}', 'Auth\ForgotPasswordController@showResetForm')
     ->name('password.reset');
 

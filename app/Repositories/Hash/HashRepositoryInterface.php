@@ -19,6 +19,15 @@ interface HashRepositoryInterface {
     function getHash($hashKey, $hashType, $now, $userStatus);
 
     /**
+     * @param $userId
+     * @param $hashType
+     * @param $now
+     * @param $userStatus
+     * @return Collection
+     */
+    function getHashByUserId($userId, $hashType, $now, $userStatus);
+
+    /**
      * @param array $attributes
      * @return Hash
      */

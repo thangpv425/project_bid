@@ -7,6 +7,17 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Login</div>
                 <div class="panel-body">
+                    @if (session('message'))
+                        @if (session('message')['type'] == 'success')
+                            <div class="alert alert-success">
+                                {{session('message')['data']}}
+                            </div>
+                        @else
+                            <div class="alert alert-danger">
+                                {{session('message')['data']}}
+                            </div>
+                        @endif
+                    @endif
                     <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                         {{ csrf_field() }}
 
