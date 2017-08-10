@@ -4,21 +4,20 @@ namespace App\Repositories\Hash;
 use App\Hash;
 use Illuminate\Container\Container as App;
 
-class EloquentHashRepository implements HashRepositoryInterface {
+class HashRepository implements HashRepositoryInterface {
 
     /**
      * @param $hashKey
      * @return Hash
      */
     public function getHashByKey($hashKey) {
-        $hashs = Hash::where('hash_key', '=', $hashKey)
-            ->limit(1)
-            ->get();
-        ;
-        return $hashs.isEmpty() ? null : $hashs[0];
+        $hash = Hash::where('hash_key', '=', $hashKey)
+            ->first();
+        return $hash ? $hash : null;
     }
 
     /**
+     * Get hash still valid with :
      * @param $hashKey
      * @param $hashType
      * @param $now
@@ -26,14 +25,14 @@ class EloquentHashRepository implements HashRepositoryInterface {
      * @return Hash
      */
     public function getHash($hashKey, $hashType, $now, $userStatus) {
-        $hashs =  Hash::leftJoin('users', 'hashs.user_id', '=', 'users.id')
+        $hash =  Hash::leftJoin('users', 'hashs.user_id', '=', 'users.id')
+            ->select('hashs.*')
             ->where('expire_at', '>=', $now)
             ->where('type', '=', $hashType)
             ->where('hash_key', '=', $hashKey)
             ->where('users.status', '=', $userStatus)
-            ->limit(1)
-            ->get();
-        return $hashs->isEmpty() ? null : $hashs[0];
+            ->first();
+        return $hash ? $hash :  null ;
     }
 
     /**

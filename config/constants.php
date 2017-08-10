@@ -8,8 +8,9 @@ return [
     ),
 
     'user_status' => array(
-        'active' => '1',
         'inactive' => '0',
+        'active' => '1',
+        'block' => '2'
     ),
 
     'hash_type' => array(
