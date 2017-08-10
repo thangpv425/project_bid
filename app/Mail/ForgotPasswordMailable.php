@@ -14,15 +14,10 @@ class ForgotPasswordMailable extends Mailable
     //mail data
     protected $data;
 
-    //mail config
-    protected $config;
-
     /**
      * ForgotPasswordMailable constructor.
-     * @param array $data data send to mail
-     * @param array $config mail config
+     * @param array $data
      */
-
     public function __construct(array $data) {
         $this->data = $data;
     }
