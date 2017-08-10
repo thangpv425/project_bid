@@ -110,8 +110,7 @@ class ForgotPasswordController extends Controller {
                         ))),
             );
 
-            $this->mailManager->send($request->input('email'),
-                new ForgotPasswordMailable($mailData));
+            $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
             $message = array(
                 'type' => 'success',
                 'data' => 'Reset password link sent to mail'
