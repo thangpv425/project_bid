@@ -92,6 +92,18 @@ class ForgotPasswordController extends Controller {
                     'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
                 );
                 $newHash = $this->hash->create($hashData);
+                $mailData = array(
+                    'link' => url(config('app.url').route('password.reset',
+                            array(
+                                'hash_key' => $newHash->hash_key,
+                            ))),
+                );
+
+                $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Reset password link sent to mail'
+                );
                 DB::commit();
             } catch (\Exception $exception) {
                 DB::rollback();
@@ -99,22 +111,7 @@ class ForgotPasswordController extends Controller {
                     'type' => 'success',
                     'data' => 'Error while create new hash'
                 );
-                return redirect()->back()->with(compact('message'));
             }
-
-
-            $mailData = array(
-                'link' => url(config('app.url').route('password.reset',
-                        array(
-                            'hash_key' => $newHash->hash_key,
-                        ))),
-            );
-
-            $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
-            $message = array(
-                'type' => 'success',
-                'data' => 'Reset password link sent to mail'
-            );
         }
         return redirect()->back()->with(compact('message'));
     }
