@@ -147,38 +147,36 @@ class RegisterController extends Controller
         $hash = $this->hash->getHash($hashKey, $hashType, $now, $userStatus);
 
         if ($hash == null) {
-            //TODO: make view for this
-            return 'Request timeout or not valid';
-        }
-
-
-
-        $user = $this->user->getUserById($hash->user_id);
-        if ($user == null) {
-            //TODO: make view for this
-            return 'Yours account has been removed from system';
-        }
-
-        try{
-            DB::beginTransaction();
-            $user->status = Config::get('constants.user_status.active');
-            $user->save();
-            $hash->expire_at = Carbon::createFromDate(1970,1,1);
-            $hash->save();
-            DB::commit();
-        }catch(\Exception $e){
-            DB::rollback();
             $message = array(
-                'type' => 'success',
-                'data' => 'Error while update user and hash'
+                'type' => 'error',
+                'data' => 'Request time out or not valid'
             );
-            return redirect()->back()->with(compact('message'));
+        } else {
+            $user = $this->user->getUserById($hash->user_id);
+            if ($user == null) {
+                $message = array(
+                    'type' => 'error',
+                    'data' => 'Yours account has been removed from system'
+                );
+            } else {
+                try{
+                    DB::beginTransaction();
+                    $user->status = Config::get('constants.user_status.active');
+                    $user->save();
+                    $hash->expire_at = Carbon::createFromDate(1970,1,1);
+                    $hash->save();
+                    DB::commit();
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $message = array(
+                        'type' => 'success',
+                        'data' => 'Error while update user and hash'
+                    );
+                }
+            }
         }
 
-
-
-        //TODO: make view for this
-        return 'Your account has been activated';
+        return redirect()->back()->with(compact('message'));
     }
 
 }

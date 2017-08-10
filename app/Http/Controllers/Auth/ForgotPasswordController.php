@@ -159,28 +159,33 @@ class ForgotPasswordController extends Controller {
 
         $hash = $this->hash->getHash($hashKey,$hashType,$now,$userStatus);
         if ($hash == null) {
-            //TODO: make view for not valid token
-            return redirect()->back()->with('error', 'Hash key not valid or timeout');
-        }
-
-        try {
-            DB::beginTransaction();
-            $this->user->update($hash->user_id,[
-                'password' => bcrypt($request->input('password')),
-                'remember_token' => Str::random(60),
-            ]);
-            $hash->expire_at = Carbon::createFromDate(1970,1,1);
-            $hash->save();
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollback();
             $message = array(
-                'type' => 'success',
-                'data' => 'Error while update user'
+                'type' => 'error',
+                'data' => 'Request not valid or timeout'
             );
-            return redirect()->back()->with(compact('message'));
+        } else {
+            try {
+                DB::beginTransaction();
+                $this->user->update($hash->user_id,[
+                    'password' => bcrypt($request->input('password')),
+                    'remember_token' => Str::random(60),
+                ]);
+                $hash->expire_at = Carbon::createFromDate(1970,1,1);
+                $hash->save();
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Password reset success'
+                );
+                DB::commit();
+            } catch (\Exception $exception) {
+                DB::rollback();
+                $message = array(
+                    'type' => 'error',
+                    'data' => 'Error while update user'
+                );
+            }
         }
-        return redirect('login');
+        return redirect()->back()->with($message);
     }
 
 }
