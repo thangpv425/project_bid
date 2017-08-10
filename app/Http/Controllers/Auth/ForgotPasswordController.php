@@ -7,9 +7,11 @@ use App\Mail\ForgotPasswordMailable;
 use App\Mail\MailManager;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
+use Faker\Provider\DateTime;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ForgotPasswordController extends Controller {
@@ -71,20 +73,35 @@ class ForgotPasswordController extends Controller {
 
         $user = $this->user->getActiveUserByEmail($request->input('email'));
 
-        if ($user == null || $user->status == Config::get('constants.user_status.inactive')) {
+        if ($user == null ||
+            $user->status == Config::get('constants.user_status.inactive') ||
+            $user->status == Config::get('constants.user_status.block')) {
+
             $message = array(
                 'type' => 'error',
                 'data' => 'Email not register'
             );
-        } else {
-            $hashData = array(
-                'hash_key' => md5(uniqid()),
-                'type' => Config::get('constants.hash_type.forgot_password'),
-                'user_id' =>$user->id,
-                'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
-            );
 
-            $newHash = $this->hash->create($hashData);
+        } else {
+            try {
+                DB::beginTransaction();
+                $hashData = array(
+                    'hash_key' => md5(uniqid()),
+                    'type' => Config::get('constants.hash_type.forgot_password'),
+                    'user_id' =>$user->id,
+                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
+                );
+                $newHash = $this->hash->create($hashData);
+                DB::commit();
+            } catch (\Exception $exception) {
+                DB::rollback();
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Error while create new hash'
+                );
+                return redirect()->back()->with(compact('message'));
+            }
+
 
             $mailData = array(
                 'link' => url(config('app.url').route('password.reset',
@@ -146,10 +163,23 @@ class ForgotPasswordController extends Controller {
             return redirect()->back()->with('error', 'Hash key not valid or timeout');
         }
 
-        $this->user->update($hash->user_id,[
-            'password' => bcrypt($request->input('password')),
-            'remember_token' => Str::random(60),
-        ]);
+        try {
+            DB::beginTransaction();
+            $this->user->update($hash->user_id,[
+                'password' => bcrypt($request->input('password')),
+                'remember_token' => Str::random(60),
+            ]);
+            $hash->expire_at = Carbon::createFromDate(1970,1,1);
+            $hash->save();
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            $message = array(
+                'type' => 'success',
+                'data' => 'Error while update user'
+            );
+            return redirect()->back()->with(compact('message'));
+        }
         return redirect('login');
     }
 

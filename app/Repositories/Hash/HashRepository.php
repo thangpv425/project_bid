@@ -26,26 +26,10 @@ class HashRepository implements HashRepositoryInterface {
      */
     public function getHash($hashKey, $hashType, $now, $userStatus) {
         $hash =  Hash::leftJoin('users', 'hashs.user_id', '=', 'users.id')
+            ->select('hashs.*')
             ->where('expire_at', '>=', $now)
             ->where('type', '=', $hashType)
             ->where('hash_key', '=', $hashKey)
-            ->where('users.status', '=', $userStatus)
-            ->first();
-        return $hash ? $hash :  null ;
-    }
-
-    /**
-     * @param $userId
-     * @param $hashType
-     * @param $now
-     * @param $userStatus
-     * @return Collection
-     */
-    function getHashByUserId($userId, $hashType, $now, $userStatus) {
-        $hash =  Hash::leftJoin('users', 'hashs.user_id', '=', 'users.id')
-            ->where('expire_at', '>=', $now)
-            ->where('type', '=', $hashType)
-            ->where('users.id', '=', $userId)
             ->where('users.status', '=', $userStatus)
             ->first();
         return $hash ? $hash :  null ;

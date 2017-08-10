@@ -4,6 +4,7 @@ namespace App\Repositories\User;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface {
     /**
@@ -60,14 +61,21 @@ class UserRepository implements UserRepositoryInterface {
     public function checkMail($email) {
 
         $user = User::leftJoin('hashs', 'users.id', '=', 'hashs.user_id')
-            ->where('users.status', '=', Config::get('constants.user_status.block'))
+            ->select('users.*')
+            ->where(function($query )use ($email){
+                $query->where('users.status', '=', Config::get('constants.user_status.block'))
+                    ->where('users.email', '=', $email);
+            })
             ->orWhere(function($query) use ($email){
               $query->where('hashs.expire_at', '>=', Carbon::now())
                   ->where('users.status', '=', Config::get('constants.user_status.inactive'))
                   ->where('users.email', '=', $email)
                   ->where('hashs.type', '=', Config::get('constants.hash_type.register'));
             })
-            ->orWhere('users.status', '=', Config::get('constants.user_status.active'))
+            ->orWhere(function($query) use ($email){
+                $query->where('users.status', '=', Config::get('constants.user_status.active'))
+                    ->where('users.email', '=', $email);
+            })
             ->first();
 
         return $user ? false : true;

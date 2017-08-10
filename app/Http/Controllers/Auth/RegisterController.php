@@ -8,8 +8,10 @@ use App\Mail\RegisterMailable;
 use App\Repositories\Hash\HashRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use Carbon\Carbon;
+use Faker\Provider\DateTime;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -84,23 +86,36 @@ class RegisterController extends Controller
             );
         } else {
             //create new user
-            $userData = [
-                'nickname' => $request->input('nickname'),
-                'email' => $request->input('email'),
-                'password' => bcrypt($request->input('password')),
-                'status' => Config::get('constants.user_status.inactive'),
-                'grant' => Config::get('constants.user_grant.user')
-            ];
-            $user = $this->user->create($userData);
 
-            //create new hash
-            $hashData = array(
-                'hash_key' => md5(uniqid()),
-                'type' => Config::get('constants.hash_type.register'),
-                'user_id' =>$user->id,
-                'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
-            );
-            $hash = $this->hash->create($hashData);
+            try{
+                DB::beginTransaction();
+                $userData = [
+                    'nickname' => $request->input('nickname'),
+                    'email' => $request->input('email'),
+                    'password' => bcrypt($request->input('password')),
+                    'status' => Config::get('constants.user_status.inactive'),
+                    'grant' => Config::get('constants.user_grant.user')
+                ];
+                $user = $this->user->create($userData);
+                DB::commit();
+
+                //create new hash
+                $hashData = array(
+                    'hash_key' => md5(uniqid()),
+                    'type' => Config::get('constants.hash_type.register'),
+                    'user_id' =>$user->id,
+                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
+                );
+                $hash = $this->hash->create($hashData);
+
+            }catch(\Exception $e){
+                DB::rollback();
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Error while create new hash'
+                );
+                return redirect()->back()->with(compact('message'));
+            }
 
             //send mail
             $mailData = array(
@@ -136,14 +151,31 @@ class RegisterController extends Controller
             return 'Request timeout or not valid';
         }
 
+
+
         $user = $this->user->getUserById($hash->user_id);
         if ($user == null) {
             //TODO: make view for this
             return 'Yours account has been removed from system';
         }
 
-        $user->status = Config::get('constants.user_status.active');
-        $user->save();
+        try{
+            DB::beginTransaction();
+            $user->status = Config::get('constants.user_status.active');
+            $user->save();
+            $hash->expire_at = Carbon::createFromDate(1970,1,1);
+            $hash->save();
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $message = array(
+                'type' => 'success',
+                'data' => 'Error while update user and hash'
+            );
+            return redirect()->back()->with(compact('message'));
+        }
+
+
 
         //TODO: make view for this
         return 'Your account has been activated';
