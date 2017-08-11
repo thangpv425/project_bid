@@ -14,7 +14,6 @@ class EditEmailUserTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_new');
             $table->string('new_email')->after('email')->change();
             $table->string('avatar')->nullable()->change();
             $table->dropColumn('role_id');
@@ -30,7 +29,6 @@ class EditEmailUserTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email_new');
             $table->string('avatar')->notnull()->change();
         });
     }
