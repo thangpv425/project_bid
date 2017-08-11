@@ -8,16 +8,16 @@
                 <div class="panel-heading">Reset Password</div>
 
                 <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger">
-                            {{ session('error') }}
-                        </div>
+                    @if (session('message'))
+                        @if (session('message')['type'] == 'success')
+                            <div class="alert alert-success">
+                                {{session('message')['data']}}
+                            </div>
+                        @else
+                            <div class="alert alert-danger">
+                                {{session('message')['data']}}
+                            </div>
+                        @endif
                     @endif
 
                     <form class="form-horizontal" method="POST" action="{{ route('password.request') }}">

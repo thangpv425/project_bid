@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use App\Http\Controllers\Controller;
+use App\Mail\MailManager;
+use App\Mail\RegisterMailable;
+use App\Repositories\Hash\HashRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -21,55 +26,152 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
-
     /**
      * Where to redirect users after registration.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/login';
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * hash repository
+     * @var App\Repositories\Hash\HashRepositoryInterface
      */
-    public function __construct()
-    {
+    protected $hash;
+
+    /**
+     * hash repository
+     * @var App\Repositories\User\UserRepositoryInterface
+     */
+    protected $user;
+
+    /**
+     * Mail manager
+     * @var App\Mail\MailManager
+     */
+    protected $mailManager;
+
+
+    public function __construct(HashRepositoryInterface $hash,
+                                UserRepositoryInterface $user,
+                                MailManager $mailManager) {
         $this->middleware('guest');
+        $this->hash = $hash;
+        $this->user = $user;
+        $this->mailManager = $mailManager;
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Show the application registration form.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return \Illuminate\Http\Response
      */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+    public function show() {
+        return view('auth.register');
+    }
+
+
+    public function register(Request $request) {
+        //validate input
+        $this->validate($request,[
+            'nickname' => 'required|string|max:255|unique:users',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:6|confirmed',
         ]);
+
+        if ($this->user->checkMail($request->input('email')) == false) {
+            $message = array(
+                'type' => 'error',
+                'data' => 'Email already taken'
+            );
+        } else {
+            //create new user
+
+            try{
+                $hashKey = md5(uniqid());
+
+                $userData = [
+                    'nickname' => $request->input('nickname'),
+                    'email' => $request->input('email'),
+                    'password' => bcrypt($request->input('password')),
+                    'status' => Config::get('constants.user_status.inactive'),
+                    'grant' => Config::get('constants.user_grant.user')
+                ];
+
+                $mailData = array(
+                    'nickname' => $request->input('nickname'),
+                    'email' => $request->input('email'),
+                    'password' => $request->input('password'),
+                    'link' => url(config('app.url').route('register.active',
+                            array(
+                                'hash_key' => $hashKey,
+                            ))),
+                );
+
+                DB::beginTransaction();
+
+                $user = $this->user->create($userData);
+
+                //create new hash
+                $hashData = array(
+                    'hash_key' => $hashKey,
+                    'type' => Config::get('constants.hash_type.register'),
+                    'user_id' =>$user->id,
+                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
+                );
+                $this->hash->create($hashData);
+
+
+                DB::commit();
+
+                $this->mailManager->send($request->input('email'), new RegisterMailable($mailData));
+
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Please check yours email to active account'
+                );
+            }catch(\Exception $e){
+                DB::rollback();
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Error while create new hash'
+                );
+            }
+        }
+        return redirect()->back()->with(compact('message'));
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'grant' => Config::get('constants.user_grant.user'),
-            'status' => Config::get('constants.user_status.de_active'),
-            'avatar' => 'null',
-        ]);
+    public function active($hashKey) {
+        $hashType = Config::get('constants.hash_type.register');
+        $userStatus = Config::get('constants.user_status.inactive');
+        $hash = $this->hash->getHash($hashKey, $hashType, $userStatus);
+        $userId = empty($hash) ? null : $hash->user_id;
+        $user = $this->user->getUserById($userId);
+        if (!(empty($hash)) && !(empty($user))) {
+            try{
+                DB::beginTransaction();
+                $user->status = Config::get('constants.user_status.active');
+                $user->save();
+                $message = array(
+                    'type' => 'success',
+                    'data' => 'Yours account active success!'
+                );
+                DB::commit();
+                $this->hash->cancelRegisterRequest($user->email);
+            }catch(\Exception $e){
+                DB::rollback();
+                $message = array(
+                    'type' => 'error',
+                    'data' => 'Error while update user and hash'
+                );
+            }
+        } else {
+            $message = array(
+                'type' => 'error',
+                'data' => 'User Account or hash has been deleted from system'
+            );
+        }
+        return redirect()->back()->with(compact('message'));
     }
+
 }
