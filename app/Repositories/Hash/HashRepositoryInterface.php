@@ -12,11 +12,10 @@ interface HashRepositoryInterface {
     /**
      * @param $hashKey
      * @param $hashType
-     * @param $now
      * @param $userStatus
      * @return Hash
      */
-    function getHash($hashKey, $hashType, $now, $userStatus);
+    function getHash($hashKey, $hashType, $userStatus);
 
     /**
      * @param array $attributes
@@ -24,4 +23,5 @@ interface HashRepositoryInterface {
      */
     function create(array $attributes);
 
+    function cancelRegisterRequest($email);
 }

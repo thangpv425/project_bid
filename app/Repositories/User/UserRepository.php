@@ -2,30 +2,18 @@
 namespace App\Repositories\User;
 
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface {
     /**
      * @param $email
      * @return \App\User
      */
-    public function getActiveUserByEmail($email) {
+    public function getUserByEmail($email) {
         $user = User::where('email', '=', $email)
             ->where('status', '=', Config::get('constants.user_status.active'))
             ->first();
         return $user ? $user : null;
-    }
-
-    /**
-     * @param $email
-     * @return Collection
-     */
-    function getUsersByEmail($email) {
-        $users = User::where('email', '=', $email)
-            ->get();
-        return $users;
     }
 
     /**
@@ -60,21 +48,10 @@ class UserRepository implements UserRepositoryInterface {
      */
     public function checkMail($email) {
 
-        $user = User::leftJoin('hashs', 'users.id', '=', 'hashs.user_id')
-            ->select('users.*')
-            ->where(function($query )use ($email){
-                $query->where('users.status', '=', Config::get('constants.user_status.block'))
-                    ->where('users.email', '=', $email);
-            })
-            ->orWhere(function($query) use ($email){
-              $query->where('hashs.expire_at', '>=', Carbon::now())
-                  ->where('users.status', '=', Config::get('constants.user_status.inactive'))
-                  ->where('users.email', '=', $email)
-                  ->where('hashs.type', '=', Config::get('constants.hash_type.register'));
-            })
-            ->orWhere(function($query) use ($email){
+        $user = User::where('users.email', '=', $email)
+            ->where(function($query) use ($email){
                 $query->where('users.status', '=', Config::get('constants.user_status.active'))
-                    ->where('users.email', '=', $email);
+                    ->orWhere('users.status', '=', Config::get('constants.user_status.block'));
             })
             ->first();
 

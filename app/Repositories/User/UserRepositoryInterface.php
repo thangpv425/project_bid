@@ -10,13 +10,7 @@ interface UserRepositoryInterface {
      * @param $email
      * @return \App\User
      */
-    function getActiveUserByEmail($email);
-
-    /**
-     * @param $email
-     * @return Collection
-     */
-    function getUsersByEmail($email);
+    function getUserByEmail($email);
 
     /**
      * @param $id

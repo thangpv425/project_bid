@@ -7,7 +7,6 @@ use App\Mail\ForgotPasswordMailable;
 use App\Mail\MailManager;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
-use Faker\Provider\DateTime;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -71,26 +70,23 @@ class ForgotPasswordController extends Controller {
     public function sendMail(Request $request) {
         $this->validate($request, ['email' => 'required|email']);
 
-        $user = $this->user->getActiveUserByEmail($request->input('email'));
+        $user = $this->user->getUserByEmail($request->input('email'));
 
-        if ($user == null ||
-            $user->status == Config::get('constants.user_status.inactive') ||
-            $user->status == Config::get('constants.user_status.block')) {
-
+        if (empty($user)) {
             $message = array(
                 'type' => 'error',
-                'data' => 'Email not register'
+                'data' => 'Email not register or blocked!'
             );
-
         } else {
             try {
-                DB::beginTransaction();
                 $hashData = array(
                     'hash_key' => md5(uniqid()),
                     'type' => Config::get('constants.hash_type.forgot_password'),
                     'user_id' =>$user->id,
                     'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
                 );
+                DB::beginTransaction();
+
                 $newHash = $this->hash->create($hashData);
                 $mailData = array(
                     'link' => url(config('app.url').route('password.reset',
@@ -99,12 +95,13 @@ class ForgotPasswordController extends Controller {
                             ))),
                 );
 
+                DB::commit();
+
                 $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
                 $message = array(
                     'type' => 'success',
                     'data' => 'Reset password link sent to mail'
                 );
-                DB::commit();
             } catch (\Exception $exception) {
                 DB::rollback();
                 $message = array(
@@ -124,16 +121,19 @@ class ForgotPasswordController extends Controller {
     public function showResetForm($hashKey) {
 
         $hashType = Config::get('constants.hash_type.forgot_password');
-        $now = Carbon::now();
         $userStatus = Config::get('constants.user_status.active');
 
-        $hash = $this->hash->getHash($hashKey,$hashType,$now,$userStatus);
-        if ($hash != null) {
+        $hash = $this->hash->getHash($hashKey,$hashType,$userStatus);
+
+        if (!empty($hash)) {
             return view('auth.passwords.reset')->with('hashKey',$hashKey);
         }
 
-        //TODO: make view for not valid token!
-        return 'Hash key not valid or timeout';
+        return view('auth.result')->with('message',array(
+            'title' => 'Reset password',
+            'type' => 'error',
+            'data' => 'Request not valid or timeout'
+        ));
     }
 
     /**
@@ -150,38 +150,43 @@ class ForgotPasswordController extends Controller {
 
         $hashKey = $request->input('hash_key');
         $hashType = Config::get('constants.hash_type.forgot_password');
-        $now = Carbon::now();
         $userStatus = Config::get('constants.user_status.active');
 
-        $hash = $this->hash->getHash($hashKey,$hashType,$now,$userStatus);
-        if ($hash == null) {
+        $hash = $this->hash->getHash($hashKey,$hashType,$userStatus);
+        if (empty($hash)) {
             $message = array(
+                'title' => 'Reset password',
                 'type' => 'error',
                 'data' => 'Request not valid or timeout'
             );
         } else {
             try {
-                DB::beginTransaction();
-                $this->user->update($hash->user_id,[
+                $newAttrs = array(
                     'password' => bcrypt($request->input('password')),
                     'remember_token' => Str::random(60),
-                ]);
+                );
+                DB::beginTransaction();
+                $this->user->update($hash->user_id,$newAttrs);
                 $hash->expire_at = Carbon::createFromDate(1970,1,1);
                 $hash->save();
+
+                DB::commit();
+
                 $message = array(
+                    'title' => 'Reset password',
                     'type' => 'success',
                     'data' => 'Password reset success'
                 );
-                DB::commit();
+
             } catch (\Exception $exception) {
                 DB::rollback();
                 $message = array(
+                    'title' => 'Reset password',
                     'type' => 'error',
                     'data' => 'Error while update user'
                 );
             }
         }
-        return redirect()->back()->with($message);
+        return view('auth.result')->with('message', $message);
     }
-
 }

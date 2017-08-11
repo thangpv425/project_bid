@@ -8,10 +8,10 @@ use App\Mail\RegisterMailable;
 use App\Repositories\Hash\HashRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use Carbon\Carbon;
-use Faker\Provider\DateTime;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -86,8 +86,10 @@ class RegisterController extends Controller
             );
         } else {
             //create new user
+
             try{
-                DB::beginTransaction();
+                $hashKey = md5(uniqid());
+
                 $userData = [
                     'nickname' => $request->input('nickname'),
                     'email' => $request->input('email'),
@@ -95,36 +97,39 @@ class RegisterController extends Controller
                     'status' => Config::get('constants.user_status.inactive'),
                     'grant' => Config::get('constants.user_grant.user')
                 ];
-                $user = $this->user->create($userData);
 
-                //create new hash
-                $hashData = array(
-                    'hash_key' => md5(uniqid()),
-                    'type' => Config::get('constants.hash_type.register'),
-                    'user_id' =>$user->id,
-                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
-                );
-                $hash = $this->hash->create($hashData);
-
-                //send mail
                 $mailData = array(
                     'nickname' => $request->input('nickname'),
                     'email' => $request->input('email'),
                     'password' => $request->input('password'),
                     'link' => url(config('app.url').route('register.active',
                             array(
-                                'hash_key' => $hash->hash_key,
+                                'hash_key' => $hashKey,
                             ))),
                 );
 
+                DB::beginTransaction();
+
+                $user = $this->user->create($userData);
+
+                //create new hash
+                $hashData = array(
+                    'hash_key' => $hashKey,
+                    'type' => Config::get('constants.hash_type.register'),
+                    'user_id' =>$user->id,
+                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
+                );
+                $this->hash->create($hashData);
+
+
+                DB::commit();
+
                 $this->mailManager->send($request->input('email'), new RegisterMailable($mailData));
 
-                //redirect
                 $message = array(
                     'type' => 'success',
                     'data' => 'Please check yours email to active account'
                 );
-                DB::commit();
             }catch(\Exception $e){
                 DB::rollback();
                 $message = array(
@@ -138,23 +143,21 @@ class RegisterController extends Controller
 
     public function active($hashKey) {
         $hashType = Config::get('constants.hash_type.register');
-        $now = Carbon::now();
         $userStatus = Config::get('constants.user_status.inactive');
-        $hash = $this->hash->getHash($hashKey, $hashType, $now, $userStatus);
-
-        if ($hash != null &&
-            ($user = $this->user->getUserById($hash->user_id)) != null) {
+        $hash = $this->hash->getHash($hashKey, $hashType, $userStatus);
+        $userId = empty($hash) ? null : $hash->user_id;
+        $user = $this->user->getUserById($userId);
+        if (!(empty($hash)) && !(empty($user))) {
             try{
                 DB::beginTransaction();
                 $user->status = Config::get('constants.user_status.active');
                 $user->save();
-                //$hash->expire_at = Carbon::createFromDate(1970,1,1);
-                $hash->save();
                 $message = array(
                     'type' => 'success',
                     'data' => 'Yours account active success!'
                 );
                 DB::commit();
+                $this->hash->cancelRegisterRequest($user->email);
             }catch(\Exception $e){
                 DB::rollback();
                 $message = array(
@@ -162,15 +165,10 @@ class RegisterController extends Controller
                     'data' => 'Error while update user and hash'
                 );
             }
-        } else if ($hash == null) {
-            $message = array(
-                'type' => 'error',
-                'data' => 'Request not valid or timeout'
-            );
         } else {
             $message = array(
                 'type' => 'error',
-                'data' => 'User Account has been deleted from system'
+                'data' => 'User Account or hash has been deleted from system'
             );
         }
         return redirect()->back()->with(compact('message'));
