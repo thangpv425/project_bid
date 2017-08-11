@@ -58,3 +58,5 @@ Route::prefix('admin')->group(function(){
 	Route::get('categories/create', function(){return view('admin.category.create');})->name('admin-category-create');
 	Route::get('orders', function(){return view('admin.order.list');})->name('admin-order');
 });
+
+	Route::get('bid-current/{id}', 'Bid\BidController@getBidCurrent')->name('bid-current');
