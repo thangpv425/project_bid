@@ -17,8 +17,10 @@ class CreateUserBidTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('bid_id');
-            $table->integer('cost');
+            $table->integer('bid_amount');
+            $table->integer('real_bid_amount');
             $table->tinyInteger('status');
+            $table->tinyInteger('bid_type');
             $table->timestamps();
         });
     }

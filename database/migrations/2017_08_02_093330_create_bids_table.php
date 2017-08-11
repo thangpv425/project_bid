@@ -20,7 +20,8 @@ class CreateBidsTable extends Migration
             $table->integer('cost_begin');
             $table->integer('cost_sell');
             $table->integer('cost_max_current');
-            $table->timestamp('time_end');
+            $table->timestamp('time_begin')->nullable();
+            $table->timestamp('time_end')->nullable();
             $table->tinyInteger('status');
             $table->timestamps();
         });

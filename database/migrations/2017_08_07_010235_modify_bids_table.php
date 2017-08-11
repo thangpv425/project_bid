@@ -15,8 +15,11 @@ class ModifyBidsTable extends Migration
     {
         Schema::table('bids', function (Blueprint $table) {
             $table->dropColumn('user_got_id');
+            $table->integer('current_price');
             $table->renameColumn('cost_max_current','current_highest_price');
-            $table->string('current_highest_bidder_name')->after('cost_max_current');
+            $table->integer('current_highest_bidder_id')->after('cost_max_current');
+            $table->string('current_highest_bidder_name');
+            $table->integer('bid_count');
         });
     }
 
