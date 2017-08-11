@@ -17,9 +17,9 @@ class ModifyBidsTable extends Migration
             $table->dropColumn('user_got_id');
             $table->integer('current_price');
             $table->renameColumn('cost_max_current','current_highest_price');
-            $table->integer('current_highest_bidder_id')->after('cost_max_current');
+            $table->integer('current_highest_bidder_id')->nullable()->after('cost_max_current');
             $table->string('current_highest_bidder_name');
-            $table->integer('bid_count');
+            $table->integer('bid_count')->default(0);
         });
     }
 
