@@ -31,7 +31,7 @@
 				<li><a href="#">Nuoc hoa</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				@if(0)
+				@if(!Auth::guest())
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							aaaaaaaa <span class="caret"></span>

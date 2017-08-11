@@ -1,2 +1,17 @@
-Chao ban {{$data->name}}, Bạn vừa đăng ký vào hệ thống của chúng tôi với email {{$data->email}}, Hãy click vào link dưới
- đây để kích hoạt tài khoản <a href="{{$data->link}}"></a>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+<body>
+<p>Chào bạn, bạn vừa yêu cầu đăng ký vào hệ thống với thông tin như sau</p>
+<ul>
+    <li>Nickname: {{$data['nickname']}}</li>
+    <li>Email: {{$data['email']}}</li>
+    <li>Password: {{$data['password']}}</li>
+</ul>
+
+<a href="{{$data['link']}}">Click here</a>
+
+</body>
+</html>
