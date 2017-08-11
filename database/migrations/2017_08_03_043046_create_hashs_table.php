@@ -14,7 +14,8 @@ class CreateHashsTable extends Migration
     public function up()
     {
         Schema::create('hashs', function (Blueprint $table) {
-            $table->string('hash_key')->unique();
+            $table->increments('id');
+            $table->string('hash_key');
             $table->dateTime('expire_at');
             $table->integer('user_id');
             $table->tinyInteger('type');
