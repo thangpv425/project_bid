@@ -801,7 +801,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
-module.exports = __webpack_require__(45);
+module.exports = __webpack_require__(46);
 
 
 /***/ }),
@@ -821,7 +821,8 @@ __webpack_require__(36);
 __webpack_require__(37);
 __webpack_require__(38);
 __webpack_require__(39);
-window.Vue = __webpack_require__(40);
+__webpack_require__(40);
+window.Vue = __webpack_require__(41);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -829,7 +830,7 @@ window.Vue = __webpack_require__(40);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example', __webpack_require__(41));
+Vue.component('example', __webpack_require__(42));
 
 var app = new Vue({
   el: '#app'
@@ -35757,6 +35758,30 @@ $(function () {
 
 /***/ }),
 /* 40 */
+/***/ (function(module, exports) {
+
+$(function () {
+	$('.input-bid button').on('click', function () {
+		var amount = $('.input-bid input').val();
+		var current_price = parseInt($('.bid-current-info').attr('data'), 10);
+		if (/^\+?(0|[1-9]\d*)$/.test(amount)) {
+			if (amount < current_price) {
+				alert('Nhap gia lon hon ' + current_price);
+			} else {
+				$.post("/bid-current/2", {
+					user_id: "10",
+					user_name: "Hoang",
+					real_bid_amount: amount
+				}, function (respont) {
+					console.log(respont);
+				});
+			}
+		} else alert("data input must be a number");
+	});
+});
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45851,15 +45876,15 @@ module.exports = Vue$3;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var Component = __webpack_require__(42)(
+var Component = __webpack_require__(43)(
   /* script */
-  __webpack_require__(43),
-  /* template */
   __webpack_require__(44),
+  /* template */
+  __webpack_require__(45),
   /* styles */
   null,
   /* scopeId */
@@ -45891,7 +45916,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -45988,7 +46013,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46017,7 +46042,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -46046,7 +46071,7 @@ if (false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
