@@ -17,6 +17,7 @@ class Bid extends Model
     	'time_end',
     	'status',
     	'current_price',
-    	'current_highest_bidder_name'
+    	'current_highest_bidder_name',
+        'time_end'
     ];
 }

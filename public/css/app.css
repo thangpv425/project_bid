@@ -12018,6 +12018,36 @@ body {
   margin-right: 6px;
 }
 
+.btn-rigister {
+  border-radius: 4px;
+  font-size: 16px;
+  background-image: none;
+  padding: 0 24px !important;
+  font-weight: 700;
+  height: 35px;
+  line-height: 35px !important;
+  margin-top: 6px;
+}
+
+.btn-login {
+  font-size: 16px;
+  color: #565b5e;
+  font-weight: 700;
+  font-style: normal;
+  cursor: pointer;
+}
+
+.btn-green {
+  background-color: #75a13e !important;
+  border: 1px solid #75a13e;
+  color: #fff !important;
+}
+
+.btn-green:hover {
+  background: #80ca18 !important;
+  border: 1px solid #80ca18;
+}
+
 /*-------slide home---------*/
 
 .slide-home {

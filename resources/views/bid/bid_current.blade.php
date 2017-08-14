@@ -7,10 +7,14 @@
 		<div class="time-end text-center">Kết thúc vào 21:00:00, 08/08/2017</div>
 		<div class="bid-current">
 			<span class="title">Giá hiện tại</span>
-			<span class="bid-current-info">740K</span>
+			<span class="bid-current-info" data={{$bid->current_price+500}} >{{$bid->current_price}}</span>
 			bởi
-			<span class="hightest-bid-user">Linh</span>
+			<span class="hightest-bid-user">{{$bid->current_highest_bidder_name}}</span>
 		</div>
 	</div>
-	@include('bid.bid-join')
+	<div class="input-bid">
+		<input type="text" name="" placeholder="Đặt giá tối thiểu từ {{$bid->current_price+500}} hoặc hơn">
+		<button>Đặt giá</button>
+	</div>
+
 @endsection

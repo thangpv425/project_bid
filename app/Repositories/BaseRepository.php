@@ -47,6 +47,11 @@ abstract class BaseRepository implements BaseInterface
         return $this->model->create($input);
     }
 
+    public function multiCreate($input)
+    {
+        return $this->model->insert($input);
+    }
+
     /**
      * @param $input $id
      * @return record updated with $input
