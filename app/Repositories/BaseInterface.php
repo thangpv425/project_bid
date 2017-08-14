@@ -6,6 +6,7 @@ interface BaseInterface
     public function paginate($limit = null, $columns = ['*']);
     public function find($id, $columns = ['*']);
     public function create($input);
+    public function multiCreate($input);
     public function update($id, $input);
     public function delete($id);
 }
