@@ -239,48 +239,89 @@ class ProductController extends Controller
     public function amountBetterHightest($bid, $request){
         try {
             if($request->real_bid_amount < $bid->current_highest_price+$this->bid_amount_step){
-                $bid_session_user_current = array(
-                    'user_id' => $request->user_id,
-                    'bid_id' => $bid->id,
-                    'real_bid_amount' => $request->real_bid_amount,
-                    'bid_amount' => $request->real_bid_amount,
-                    'bid_type' => $this->bid_type_manual,
-                    'created_at'=> $this->time_now
-                );
-                $bid_update = array(
-                    'current_price' => $request->real_bid_amount,
-                    'current_highest_price' => $request->real_bid_amount,
-                    'current_highest_bidder_id' => $request->user_id,
-                    'current_highest_bidder_name' => $request->user_name
-                );
+                if($request->user_id != $bid->current_highest_bidder_id){
+                    $bid_session_user_current = array(
+                        'user_id' => $request->user_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $request->real_bid_amount,
+                        'bid_amount' => $request->real_bid_amount,
+                        'bid_type' => $this->bid_type_manual,
+                        'created_at'=> $this->time_now
+                    );
+
+                    $bid_session_user_highest = array(
+                        'user_id' => $bid->current_highest_bidder_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $bid->current_highest_price,
+                        'bid_amount' => $bid->current_highest_price,  
+                        'bid_type' => $this->bid_type_auto,
+                        'created_at'=> $this->time_now
+                    );
+                    $bid_update = array(
+                        'current_price' => $request->real_bid_amount,
+                        'current_highest_price' => $request->real_bid_amount,
+                        'current_highest_bidder_id' => $request->user_id,
+                        'current_highest_bidder_name' => $request->user_name
+                    );
+                }else{
+                    $bid_session_user_highest = array(
+                        'user_id' => $bid->current_highest_bidder_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $request->real_bid_amount,
+                        'bid_amount' => $bid->current_price,  
+                        'bid_type' => $this->bid_type_manual,
+                        'created_at'=> $this->time_now
+                    );
+                    $bid_update = array(
+                        'current_highest_price' => $request->real_bid_amount,
+                    ); 
+                }
             }else{
-                $bid_session_user_current = array(
-                    'user_id' => $request->user_id,
-                    'bid_id' => $bid->id,
-                    'real_bid_amount' => $request->real_bid_amount,
-                    'bid_amount' => $bid->current_highest_price+$this->bid_amount_step,
-                    'bid_type' => $this->bid_type_manual,
-                    'created_at'=> $this->time_now
-                );
-                $bid_update = array(
-                    'current_price' => $bid->current_highest_price+$this->bid_amount_step,
-                    'current_highest_price' => $request->real_bid_amount,
-                    'current_highest_bidder_id' => $request->user_id,
-                    'current_highest_bidder_name' => $request->user_name
-                );
+                if($request->user_id != $bid->current_highest_bidder_id){
+                    $bid_session_user_current = array(
+                        'user_id' => $request->user_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $request->real_bid_amount,
+                        'bid_amount' => $bid->current_highest_price+$this->bid_amount_step,
+                        'bid_type' => $this->bid_type_manual,
+                        'created_at'=> $this->time_now
+                    );
+                    $bid_session_user_highest = array(
+                        'user_id' => $bid->current_highest_bidder_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $bid->current_highest_price,
+                        'bid_amount' => $bid->current_highest_price,  
+                        'bid_type' => $this->bid_type_auto,
+                        'created_at'=> $this->time_now
+                    );
+                    $bid_update = array(
+                        'current_price' => $bid->current_highest_price+$this->bid_amount_step,
+                        'current_highest_price' => $request->real_bid_amount,
+                        'current_highest_bidder_id' => $request->user_id,
+                        'current_highest_bidder_name' => $request->user_name
+                    );    
+                }else{
+                    $bid_session_user_highest = array(
+                        'user_id' => $bid->current_highest_bidder_id,
+                        'bid_id' => $bid->id,
+                        'real_bid_amount' => $request->real_bid_amount,
+                        'bid_amount' => $bid->current_price,  
+                        'bid_type' => $this->bid_type_manual,
+                        'created_at'=> $this->time_now
+                    );
+                    $bid_update = array(
+                        'current_highest_price' => $request->real_bid_amount,
+                    ); 
+                }  
             }
 
-            $bid_session_user_highest = array(
-                'user_id' => $bid->current_highest_bidder_id,
-                'bid_id' => $bid->id,
-                'real_bid_amount' => $bid->current_highest_price,
-                'bid_amount' => $bid->current_highest_price,  
-                'bid_type' => $this->bid_type_auto,
-                'created_at'=> $this->time_now
-            );
+            
 
             DB::beginTransaction();
-            $this->user_bidRepository->multiCreate([$bid_session_user_highest,$bid_session_user_current,]);
+            if($request->user_id != $bid->current_highest_bidder_id)
+                $this->user_bidRepository->multiCreate([$bid_session_user_highest,$bid_session_user_current]);
+            else
+                $this->user_bidRepository->create($bid_session_user_highest);
             $bid->update($bid_update);
             DB::commit();
         } catch (Exception $e) {
