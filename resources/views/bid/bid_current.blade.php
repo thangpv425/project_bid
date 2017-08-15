@@ -13,7 +13,9 @@
 		</div>
 	</div>
 	<div class="input-bid">
-		<input type="text" name="" placeholder="Đặt giá tối thiểu từ {{$bid->current_price+500}} hoặc hơn">
+		<input type="text" name="amount" placeholder="Đặt giá tối thiểu từ {{$bid->current_price+500}} hoặc hơn">
+		<input type="text" name="name" placeholder="name">
+		<input type="number" name="id" placeholder="id">
 		<button>Đặt giá</button>
 	</div>
 
