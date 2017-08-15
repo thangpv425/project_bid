@@ -90,12 +90,13 @@ class ProductController extends Controller
                     'user_id' => $request->user_id,
                     'bid_id' => $bid->id,
                     'real_bid_amount' => $request->real_bid_amount,
-                    'bid_amount' => $request->real_bid_amount,
+                    'bid_amount' => $bid->cost_begin,
                     'bid_type' => $this->bid_type_manual,
                     'created_at'=> $this->time_now
                 );
                 $bid_update = array(
-                    'current_price' => $request->real_bid_amount,
+
+                    'current_price' => $bid->cost_begin,
                     'current_highest_price' => $request->real_bid_amount,
                     'current_highest_bidder_id' => $request->user_id,
                     'current_highest_bidder_name' => $request->user_name,
