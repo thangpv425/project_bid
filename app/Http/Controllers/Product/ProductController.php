@@ -43,59 +43,135 @@ class ProductController extends Controller
      */
     public function postBid(Request $request, $id) {
         $bid = $this->bidRepository->find($id);
-        
-        if($bid->status == Config::get('constants.bid_status.begining')){
-            if($request->real_bid_amount <=  ($bid->current_price)){
-                return false;
+              
+        if($bid->time_begin <= $this->time_now && $this->time_now <= $bid->time_end && $bid->status == Config::get('constants.bid_status.begining')){
+            //return $bid->current_highest_bidder_id == null ? 1:0;
+            if($request->real_bid_amount <  ($bid->current_price+$this->bid_amount_step)){
+                $respont = array('error'=>'bid must more than current proce');
+            }elseif ($bid->current_highest_bidder_id == null) {
+                //return "nguoi tra gia lan dau";
+                $this->amountFirst($bid, $request);
             }elseif ($request->real_bid_amount >= $bid->cost_sell) {
-                $this->amountCostSell($bid, $request, $id);
+                //return " tra gia ban luon";
+                $this->amountCostSell($bid, $request);
             }else{
                 if($request->real_bid_amount < $bid->current_highest_price){
-                    $this->amountLessHightest($bid, $request, $id);
+                    //return "tra gia nho hơn current hightest";
+                    $this->amountLessHightest($bid, $request);
                 }elseif($request->real_bid_amount == $bid->current_highest_price){
-                    $this->amountEqualHightest($bid, $request, $id);
+                    //return  "tra gia bang current hightest";
+                    $this->amountEqualHightest($bid, $request);
                 }else{
-                    $this->amountBetterHightest($bid, $request, $id);
+                    //return "tra gia lon hon gia current hightest";
+                    $this->amountBetterHightest($bid, $request);
                 }
             }
             $respont = array(
+                'success'=>'bid success',
                 'current_highest_bidder_id'=> $bid->current_highest_bidder_id,
                 'current_highest_bidder_name'=>$bid->current_highest_bidder_name,
                 'current_price'=> $bid->current_price,
             );
-            return $respont;
         }else
-            return false;  
+            $respont = array('error'=>'bid is invalid');
+        
+        return $respont;  
+    }
+
+    /**
+     * update bid in case nguoi tra gia lan dau
+     * @param $bid, $request
+     * @return void
+     */
+    public function amountFirst($bid, $request){
+        try {
+            if($request->real_bid_amount < $bid->cost_sell){
+                $bid_session_user_current = array(
+                    'user_id' => $request->user_id,
+                    'bid_id' => $bid->id,
+                    'real_bid_amount' => $request->real_bid_amount,
+                    'bid_amount' => $bid->cost_begin,
+                    'bid_type' => $this->bid_type_manual,
+                    'created_at'=> $this->time_now
+                );
+                $bid_update = array(
+                    'current_price' => $bid->cost_begin,
+                    'current_highest_price' => $request->real_bid_amount,
+                    'current_highest_bidder_id' => $request->user_id,
+                    'current_highest_bidder_name' => $request->user_name,
+                );
+            }else{
+                $bid_session_user_current = array(
+                    'user_id' => $request->user_id,
+                    'bid_id' => $bid->id,
+                    'real_bid_amount' => $bid->cost_sell,
+                    'bid_amount' => $bid->cost_sell,
+                    'bid_type' => $this->bid_type_manual,
+                    'created_at'=> $this->time_now
+                );
+                $bid_update = array(
+                    'current_price' => $bid->cost_sell,
+                    'current_highest_price' => $bid->cost_sell,
+                    'current_highest_bidder_id' => $request->user_id,
+                    'current_highest_bidder_name' => $request->user_name,
+                    'status' => Config::get('constants.bid_status.success'),
+                );
+            }
+            
+
+            DB::beginTransaction();
+            $this->user_bidRepository->create($bid_session_user_current);
+            $bid->update($bid_update);
+            DB::commit();
+            
+        } catch (Exception $e) {
+            DB::rollback();
+            return false;
+        }
     }
 
     /**
      * update bid in case amount input is less than current hightest 
-     * @param $bid, $request, $id
+     * @param $bid, $request
      * @return void
      */
-    public function amountLessHightest($bid, $request, $id){
+    public function amountLessHightest($bid, $request){
         try {
             $bid_session_user_current = array(
                 'user_id' => $request->user_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $request->real_bid_amount,
                 'bid_amount' => $request->real_bid_amount,
                 'bid_type' => $this->bid_type_manual,
                 'created_at'=> $this->time_now
             );
 
-            $bid_session_user_highest = array(
-                'user_id' => $bid->current_highest_bidder_id,
-                'bid_id' => $id,
-                'real_bid_amount' => $bid->current_highest_price,
-                'bid_amount' => $bid->current_price+$this->bid_amount_step,  
-                'bid_type' => $this->bid_type_auto,
-                'created_at'=> $this->time_now
-            );
+            if($request->real_bid_amount+$this->bid_amount_step <= $bid->current_highest_price){
+                $bid_session_user_highest = array(
+                    'user_id' => $bid->current_highest_bidder_id,
+                    'bid_id' => $bid->id,
+                    'real_bid_amount' => $bid->current_highest_price,
+                    'bid_amount' => $request->real_bid_amount+$this->bid_amount_step,  
+                    'bid_type' => $this->bid_type_auto,
+                    'created_at'=> $this->time_now
+                );
+                $bid_update = array('current_price' => $request->real_bid_amount+$this->bid_amount_step);
+            }else{
+                $bid_session_user_highest = array(
+                    'user_id' => $bid->current_highest_bidder_id,
+                    'bid_id' => $bid->id,
+                    'real_bid_amount' => $bid->current_highest_price,
+                    'bid_amount' => $bid->current_highest_price,  
+                    'bid_type' => $this->bid_type_auto,
+                    'created_at'=> $this->time_now
+                );
+                $bid_update = array('current_price' => $bid->current_highest_price);
+            }
+            
 
             DB::beginTransaction();
             $this->user_bidRepository->multiCreate([$bid_session_user_highest,$bid_session_user_current]);
-            $bid->update(['current_price' => $request->real_bid_amount+$this->bid_amount_step]);
+            $bid->update($bid_update);
             DB::commit();
             
         } catch (Exception $e) {
@@ -106,23 +182,23 @@ class ProductController extends Controller
 
     /**
      * update bid in case amount input is equal current hightest 
-     * @param $bid, $request, $id
+     * @param $bid, $request
      * @return void
      */
-    public function amountEqualHightest($bid, $request, $id){
+    public function amountEqualHightest($bid, $request){
         try {
             $bid_session_user_current = array(
                 'user_id' => $request->user_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $request->real_bid_amount,
-                'bid_amount' => $bid->current_price+$this->bid_amount_step,
+                'bid_amount' => $request->real_bid_amount,
                 'bid_type' => $this->bid_type_manual,
                 'created_at'=> $this->time_now
             );
 
             $bid_session_user_highest = array(
                 'user_id' => $bid->current_highest_bidder_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $bid->current_highest_price,
                 'bid_amount' => $bid->current_highest_price,  
                 'bid_type' => $this->bid_type_auto,
@@ -134,8 +210,6 @@ class ProductController extends Controller
             $bid->update([
                 'current_price' => $request->real_bid_amount,
                 'current_highest_price' => $request->real_bid_amount,
-                'current_highest_bidder_id' => $request->user_id,
-                'current_highest_bidder_name' => $request->user_name,
             ]);
             DB::commit();
             
@@ -148,23 +222,23 @@ class ProductController extends Controller
 
     /**
      * update bid in case amount input is more than current hightest 
-     * @param $bid, $request, $id
+     * @param $bid, $request
      * @return void
      */
-    public function amountBetterHightest($bid, $request, $id){
+    public function amountBetterHightest($bid, $request){
         try {
             $bid_session_user_current = array(
                 'user_id' => $request->user_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $request->real_bid_amount,
-                'bid_amount' => $request->real_bid_amount,
+                'bid_amount' => $bid->current_highest_price+$this->bid_amount_step,
                 'bid_type' => $this->bid_type_manual,
                 'created_at'=> $this->time_now
             );
 
             $bid_session_user_highest = array(
                 'user_id' => $bid->current_highest_bidder_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $bid->current_highest_price,
                 'bid_amount' => $bid->current_highest_price,  
                 'bid_type' => $this->bid_type_auto,
@@ -188,28 +262,37 @@ class ProductController extends Controller
 
     /**
      * update bid in case amount input is more than cost sell
-     * @param $bid, $request, $id
+     * @param $bid, $request
      * @return void
      */
-    public function amountCostSell($bid, $request, $id){
+    public function amountCostSell($bid, $request){
         try {
             $bid_session_user_current = array(
                 'user_id' => $request->user_id,
-                'bid_id' => $id,
+                'bid_id' => $bid->id,
                 'real_bid_amount' => $request->real_bid_amount,
-                'bid_amount' => $request->real_bid_amount,
+                'bid_amount' => $bid->cost_sell,
                 'bid_type' => $this->bid_type_manual,
                 'created_at'=> $this->time_now
             );
             
+            $bid_session_user_highest = array(
+                'user_id' => $bid->current_highest_bidder_id,
+                'bid_id' => $bid->id,
+                'real_bid_amount' => $bid->current_highest_price,
+                'bid_amount' => $bid->current_highest_price,  
+                'bid_type' => $this->bid_type_auto,
+                'created_at'=> $this->time_now
+            );
+
             DB::beginTransaction();
-            //$this->user_bidRepository->create($bid_session_user_current);
+            $this->user_bidRepository->multiCreate([$bid_session_user_highest,$bid_session_user_current]);
             $bid->update([
                 'current_price' => $bid->cost_sell,
-                'current_highest_price' => $request->real_bid_amount,
+                'current_highest_price' => $bid->cost_sell,
                 'current_highest_bidder_id' => $request->user_id,
                 'current_highest_bidder_name' => $request->user_name,
-                'status' => Config::get('constants.bid_status.ended'),
+                'status' => Config::get('constants.bid_status.success'),
                 'time_end' => $this->time_now
             ]);
             DB::commit();
