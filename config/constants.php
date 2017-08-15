@@ -35,9 +35,8 @@ return [
     ),
 
     'bid_status' => array(
-        'donot_begin' => 0,
         'begining' => 1,
-        'ended' => 2
+        'success' => 2,
     ),
 
 ];
