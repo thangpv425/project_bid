@@ -86,7 +86,6 @@ class RegisterController extends Controller
             );
         } else {
             //create new user
-
             try{
                 $hashKey = md5(uniqid());
 

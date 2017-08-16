@@ -1,23 +1,46 @@
 @extends('user.index')
 @section('user-page')
 	<div class="change-password" data-menu='5'>
-		<form class="form-horizontal" role="form">
-			<div class="form-group">
+		@if (session('message'))
+			@if (session('message')['type'] == 'success')
+				<div class="alert alert-success">
+					{{session('message')['data']}}
+				</div>
+			@else
+				<div class="alert alert-danger">
+					{{session('message')['data']}}
+				</div>
+			@endif
+		@endif
+		<form class="form-horizontal" role="form" method="POST" action="{{route('user.change-password')}}">
+			{{ csrf_field() }}
+			<div class="form-group{{ $errors->has('current_password') ? ' has-error' : '' }}">
 				<label class="control-label col-sm-2">Password hiện tại</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" type="password" name="" >
+					<input class="form-control col-sm-10" type="password" name="current_password" >
+					@if ($errors->has('current_password'))
+						<span class="help-block">
+                                        <strong>{{ $errors->first('current_password') }}</strong>
+                                    </span>
+					@endif
 				</div>
 			</div>
-			<div class="form-group">
+
+			<div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
 				<label class="control-label col-sm-2">Password mới</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" type="password" name="" >
+					<input class="form-control col-sm-10" id = "password" type="password" name="password" >
+					@if ($errors->has('password'))
+						<span class="help-block">
+							<strong>{{ $errors->first('password') }}</strong>
+						</span>
+					@endif
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="control-label col-sm-2">Nhập lại</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" type="password" name="" >
+					<input class="form-control col-sm-10" id = "password-confirm" type="password" name="password_confirmation">
 				</div>
 			</div>
 			<div class="form-group">

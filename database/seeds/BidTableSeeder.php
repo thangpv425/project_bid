@@ -17,6 +17,8 @@ class BidTableSeeder extends Seeder
         	DB::table('bids')->insert([
         		'product_id'=>$i,
         		'cost_begin'=>1000,
+                'current_price'=>1000,
+                'current_highest_price'=>1000,
         		'cost_sell'=>100000,
         		'time_begin'=>'2017-08-11 06:43:43',
         		'time_end'=>'2017-08-31 06:43:43',
