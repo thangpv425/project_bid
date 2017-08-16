@@ -11,6 +11,7 @@ require('./raphael');
 require('./morris');
 require('./morris-data');
 require('./admin');
+require('./bid');
 window.Vue = require('vue');
 
 /**

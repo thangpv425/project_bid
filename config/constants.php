@@ -26,6 +26,17 @@ return [
         'register' => 5,
         'change_email' => 5,
         'forgot_password' => 5,
-    )
+    ),
+    'bid_amount_step' => 500,
+
+    'bid_amount_type' => array(
+        'manual' => 0,
+        'auto' =>1,
+    ),
+
+    'bid_status' => array(
+        'begining' => 1,
+        'success' => 2,
+    ),
 
 ];
