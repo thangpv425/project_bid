@@ -35,6 +35,9 @@ Route::get('password/reset/{hash_key}', 'Auth\ForgotPasswordController@showReset
 Route::prefix('user')->group(function(){
     Route::get('change-password', 'User\UserController@showChangePassword');
     Route::post('change-password', 'User\UserController@changePassword')->name('user.change-password');
+    Route::get('change-email', 'User\UserController@showChangeEmail');
+    Route::post('change-email', 'User\UserController@changeEmail')->name('user.change-email');
+    Route::get('change-email/{hash_key}', 'User\UserController@confirmChangeEmail')->name('user.confirm.change-email');
 });
 
 Route::prefix('mocup')->group(function(){

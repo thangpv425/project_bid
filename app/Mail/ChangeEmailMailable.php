@@ -2,12 +2,12 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
 
-class ForgotPasswordMailable extends Mailable
-{
+class ChangeEmailMailable extends Mailable {
     use Queueable, SerializesModels;
 
     //mail data
@@ -23,13 +23,12 @@ class ForgotPasswordMailable extends Mailable
 
     /**
      * Build the message.
-     *
      * @return $this
      */
     public function build() {
-        return $this->view('emails.forgot_password')
-            ->with('link',$this->data['link'])
-            ->subject('Reset Password');
+        $data = $this->data;
+        return $this->view('emails.change_email')
+            ->with(compact('data'))
+            ->subject('Change Email');
     }
-
 }

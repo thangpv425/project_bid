@@ -161,7 +161,7 @@ class RegisterController extends Controller
                 DB::rollback();
                 $message = array(
                     'type' => 'error',
-                    'data' => 'Error while update user and hash'
+                    'data' => 'Error while update user and hash data'
                 );
             }
         } else {
