@@ -2,6 +2,7 @@
 namespace App\Repositories\User;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 
 class UserRepository implements UserRepositoryInterface {
@@ -46,6 +47,7 @@ class UserRepository implements UserRepositoryInterface {
      * @param $email
      * @return bool
      */
+    //TODO: sua lai
     public function checkMail($email) {
 
         $user = User::where('users.email', '=', $email)
@@ -56,6 +58,43 @@ class UserRepository implements UserRepositoryInterface {
             ->first();
 
         return $user ? false : true;
+    }
+
+    /**
+     * check new email valid
+     * @param $email
+     * @return bool
+     */
+    public function checkChangeEmail($email) {
+        $user = User::leftJoin('hashs', 'users.id', '=', 'hashs.user_id')
+            ->select('users.*')
+            ->where(function($query) use ($email) {
+                $query->where('email', '=', $email)
+                    ->where(function($query) {
+                        $query->where('users.status', '=', Config::get('constants.user_status.active'))
+                            ->orWhere('users.status', '=', Config::get('constants.user_status.block'));
+                    });
+
+            })->orWhere(function ($query) use ($email) {
+                $query->where('hashs.expire_at', '>' , Carbon::now())
+                    ->where(function ($query) use ($email) {
+                       $query->where(function ($query) use ($email){
+                           $query->where('users.new_email', '=', $email)
+                               ->where('hashs.type', '=', Config::get('constants.hash_type.change_email'));
+                       })
+                           ->orWhere(function ($query) use ($email){
+                               $query->where('users.email', '=', $email)
+                                   ->where('hashs.type', '=', Config::get('constants.hash_type.register'));
+                           });
+                    });
+
+            })->first();
+
+        return empty($user) ? true : false;
+    }
+
+    protected function setNullNewEmail() {
+
     }
 
 }

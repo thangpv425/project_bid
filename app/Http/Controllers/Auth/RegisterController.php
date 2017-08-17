@@ -80,63 +80,63 @@ class RegisterController extends Controller
         ]);
 
         if ($this->user->checkMail($request->input('email')) == false) {
-            $message = array(
+            return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'Email already taken'
-            );
-        } else {
-            //create new user
-            try{
-                $hashKey = md5(uniqid());
-
-                $userData = [
-                    'nickname' => $request->input('nickname'),
-                    'email' => $request->input('email'),
-                    'password' => bcrypt($request->input('password')),
-                    'status' => Config::get('constants.user_status.inactive'),
-                    'grant' => Config::get('constants.user_grant.user')
-                ];
-
-                $mailData = array(
-                    'nickname' => $request->input('nickname'),
-                    'email' => $request->input('email'),
-                    'password' => $request->input('password'),
-                    'link' => url(config('app.url').route('register.active',
-                            array(
-                                'hash_key' => $hashKey,
-                            ))),
-                );
-
-                DB::beginTransaction();
-
-                $user = $this->user->create($userData);
-
-                //create new hash
-                $hashData = array(
-                    'hash_key' => $hashKey,
-                    'type' => Config::get('constants.hash_type.register'),
-                    'user_id' =>$user->id,
-                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
-                );
-                $this->hash->create($hashData);
-
-
-                DB::commit();
-
-                $this->mailManager->send($request->input('email'), new RegisterMailable($mailData));
-
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Please check yours email to active account'
-                );
-            }catch(\Exception $e){
-                DB::rollback();
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Error while create new hash'
-                );
-            }
+            ));
         }
+
+        //create new user
+        try{
+            $hashKey = md5(uniqid());
+
+            $userData = [
+                'nickname' => $request->input('nickname'),
+                'email' => $request->input('email'),
+                'password' => bcrypt($request->input('password')),
+                'status' => Config::get('constants.user_status.inactive'),
+                'grant' => Config::get('constants.user_grant.user')
+            ];
+
+            $mailData = array(
+                'nickname' => $request->input('nickname'),
+                'email' => $request->input('email'),
+                'password' => $request->input('password'),
+                'link' => url(config('app.url').route('register.active',
+                        array(
+                            'hash_key' => $hashKey,
+                        ))),
+            );
+
+            DB::beginTransaction();
+
+            $user = $this->user->create($userData);
+
+            //create new hash
+            $hashData = array(
+                'hash_key' => $hashKey,
+                'type' => Config::get('constants.hash_type.register'),
+                'user_id' =>$user->id,
+                'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.register')),
+            );
+            $this->hash->create($hashData);
+
+            $this->mailManager->send($request->input('email'), new RegisterMailable($mailData));
+
+            DB::commit();
+
+            $message = array(
+                'type' => 'success',
+                'data' => 'Please check yours email to active account'
+            );
+        }catch(\Exception $e){
+            DB::rollback();
+            $message = array(
+                'type' => 'success',
+                'data' => 'Error while create new hash'
+            );
+        }
+
         return redirect()->back()->with(compact('message'));
     }
 
@@ -146,30 +146,32 @@ class RegisterController extends Controller
         $hash = $this->hash->getHash($hashKey, $hashType, $userStatus);
         $userId = empty($hash) ? null : $hash->user_id;
         $user = $this->user->getUserById($userId);
-        if (!(empty($hash)) && !(empty($user))) {
-            try{
-                DB::beginTransaction();
-                $user->status = Config::get('constants.user_status.active');
-                $user->save();
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Yours account active success!'
-                );
-                DB::commit();
-                $this->hash->cancelRegisterRequest($user->email);
-            }catch(\Exception $e){
-                DB::rollback();
-                $message = array(
-                    'type' => 'error',
-                    'data' => 'Error while update user and hash'
-                );
-            }
-        } else {
-            $message = array(
+
+        if (empty($hash) || (empty($user))) {
+            return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'User Account or hash has been deleted from system'
+            ));
+        }
+
+        try{
+            DB::beginTransaction();
+            $user->status = Config::get('constants.user_status.active');
+            $user->save();
+            $message = array(
+                'type' => 'success',
+                'data' => 'Yours account active success!'
+            );
+            DB::commit();
+            $this->hash->cancelRegisterRequest($user->email);
+        }catch(\Exception $e){
+            DB::rollback();
+            $message = array(
+                'type' => 'error',
+                'data' => 'Error while update user and hash'
             );
         }
+        
         return redirect()->back()->with(compact('message'));
     }
 
