@@ -17,7 +17,7 @@
 			<div class="form-group{{ $errors->has('current_password') ? ' has-error' : '' }}">
 				<label class="control-label col-sm-2">Password hiện tại</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" type="password" name="current_password" >
+					<input class="form-control col-sm-10" type="password" name="current_password" required>
 					@if ($errors->has('current_password'))
 						<span class="help-block">
                                         <strong>{{ $errors->first('current_password') }}</strong>
@@ -29,7 +29,7 @@
 			<div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
 				<label class="control-label col-sm-2">Password mới</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" id = "password" type="password" name="password" >
+					<input class="form-control col-sm-10" id = "password" type="password" name="password" required>
 					@if ($errors->has('password'))
 						<span class="help-block">
 							<strong>{{ $errors->first('password') }}</strong>
@@ -40,7 +40,7 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2">Nhập lại</label>
 				<div class="col-sm-10">
-					<input class="form-control col-sm-10" id = "password-confirm" type="password" name="password_confirmation">
+					<input class="form-control col-sm-10" id = "password-confirm" type="password" name="password_confirmation" required>
 				</div>
 			</div>
 			<div class="form-group">
