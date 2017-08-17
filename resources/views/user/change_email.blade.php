@@ -14,17 +14,6 @@
 		@endif
 		<form class="form-horizontal" role="form" method="POST" action="{{route('user.change-email')}}">
 			{{ csrf_field() }}
-			<div class="form-group{{ $errors->has('current_email') ? ' has-error' : '' }}">
-				<label class="control-label col-sm-2">Mail hiện tại</label>
-				<div class="col-sm-10">
-					<input class="form-control col-sm-10" type="email" name="current_email" id="current_email" required>
-					@if ($errors->has('current_email'))
-						<span class="help-block">
-							<strong>{{ $errors->first('current_email') }}</strong>
-						</span>
-					@endif
-				</div>
-			</div>
 			<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 				<label class="control-label col-sm-2">Mail mới</label>
 				<div class="col-sm-10">

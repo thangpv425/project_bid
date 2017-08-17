@@ -68,34 +68,35 @@ class UserController extends Controller {
 
         $user = Auth::user();
         if (!Hash::check($curPassword, $user->password)) {
-            $message = array(
+            return redirect()->back()->with(array(
                 'type' => 'error',
                 'data' => 'Your password not valid!'
-            );
-        } else {
-            try {
-                $newAttrs = array(
-                    'password' => bcrypt($newPassword),
-                    'remember_token' => Str::random(60),
-                );
-
-                DB::beginTransaction();
-                $this->user->update($user->id, $newAttrs);
-                DB::commit();
-
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Yours password has been changed!'
-                );
-
-            } catch (\Exception $exception) {
-                DB::rollback();
-                $message = array(
-                    'type' => 'error',
-                    'data' => 'Error while update yours password'
-                );
-            }
+            ));
         }
+
+        try {
+            $newAttrs = array(
+                'password' => bcrypt($newPassword),
+                'remember_token' => Str::random(60),
+            );
+
+            DB::beginTransaction();
+            $this->user->update($user->id, $newAttrs);
+            DB::commit();
+
+            $message = array(
+                'type' => 'success',
+                'data' => 'Yours password has been changed!'
+            );
+
+        } catch (\Exception $exception) {
+            DB::rollback();
+            $message = array(
+                'type' => 'error',
+                'data' => 'Error while update yours password'
+            );
+        }
+
         return redirect()->back()->with(compact('message'));
     }
 
@@ -110,65 +111,58 @@ class UserController extends Controller {
     public function changeEmail(Request $request) {
         //validate input
         $this->validate($request, [
-           'current_email' => 'required|email',
             'email' => 'required|email|confirmed'
         ]);
-        $currentEmail = $request->input('current_email');
         $newEmail = $request->input('email');
 
         $user = Auth::user();
 
-        if ($user->email != $currentEmail) {
-            $message = array(
-                'type'  => 'error',
-                'data' => 'Yours email not match',
-            );
-        } else if (!$this->user->checkChangeEmail($newEmail)) {
-            $message = array(
+        if (!$this->user->checkChangeEmail($newEmail)) {
+            return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'New email has been used!'
+            ));
+        }
+
+        try {
+            $hashData = array(
+                'hash_key' => md5(uniqid()),
+                'type' => Config::get('constants.hash_type.change_email'),
+                'user_id' =>$user->id,
+                'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.change_email')),
             );
-        } else {
-            try {
-                $hashData = array(
-                    'hash_key' => md5(uniqid()),
-                    'type' => Config::get('constants.hash_type.change_email'),
-                    'user_id' =>$user->id,
-                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.change_email')),
-                );
 
-                DB::beginTransaction();
-                $newHash = $this->hash->create($hashData);
+            DB::beginTransaction();
+            $newHash = $this->hash->create($hashData);
 
-                //update new_email
-                $this->user->update($user->id, array('new_email' => $newEmail));
+            //update new_email
+            $this->user->update($user->id, array('new_email' => $newEmail));
 
-                DB::commit();
+            //send mail
+            $mailData = array(
+                'nickname' => $user->nickname,
+                'new_email' => $newEmail,
+                'link' => url(config('app.url').route('user.confirm.change-email',
+                        array(
+                            'hash_key' => $newHash->hash_key,
+                        ))),
+            );
+            $this->mailManager->send($user->email, new ChangeEmailMailable($mailData));
 
-                //send mail
-                $mailData = array(
-                    'nickname' => $user->nickname,
-                    'new_email' => $newEmail,
-                    'link' => url(config('app.url').route('user.confirm.change-email',
-                            array(
-                                'hash_key' => $newHash->hash_key,
-                            ))),
-                );
-                $this->mailManager->send($currentEmail, new ChangeEmailMailable($mailData));
+            DB::commit();
 
-                //message
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Change email link sent to mail',
-                );
+            //message
+            $message = array(
+                'type' => 'success',
+                'data' => 'Change email link sent to mail',
+            );
 
-            } catch (\Exception $exception) {
-                $message = array(
-                    'type' => 'error',
-                    'data' => 'Error while create hash key',
-                );
-                DB::rollback();
-            }
+        } catch (\Exception $exception) {
+            $message = array(
+                'type' => 'error',
+                'data' => 'Error while create hash key',
+            );
+            DB::rollback();
         }
 
         return redirect()->back()->with(compact('message'));
@@ -186,37 +180,36 @@ class UserController extends Controller {
         $userId = empty($hash) ? null : $hash->user_id;
         $user = $this->user->getUserById($userId);
 
-        if (!(empty($hash)) && !(empty($user))) {
-            try {
-                DB::beginTransaction();
-                //update user
-                $user->email = $user->new_email;
-                $user->new_email = null;
-                $user->remember_token = Str::random(60);
-                $user->save();
-
-                //update hash
-                $hash->expire_at = Carbon::createFromDate('1970', '1', '1');
-                $hash->save();
-
-
-                DB::commit();
-
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Change email success!'
-                );
-            } catch (\Exception $exception) {
-                DB::rollback();
-                $message = array(
-                    'type' => 'error',
-                    'data' => 'Error while update user and hash data'
-                );
-            }
-        } else {
-            $message = array(
+        if (empty($hash) || empty($user)) {
+            return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'User Account or hash has been deleted from system',
+            ));
+        }
+
+        try {
+            DB::beginTransaction();
+            //update user
+            $user->email = $user->new_email;
+            $user->new_email = null;
+            $user->remember_token = Str::random(60);
+            $user->save();
+
+            //update hash
+            $hash->expire_at = Carbon::createFromDate('1970', '1', '1');
+            $hash->save();
+
+            DB::commit();
+
+            $message = array(
+                'type' => 'success',
+                'data' => 'Change email success!'
+            );
+        } catch (\Exception $exception) {
+            DB::rollback();
+            $message = array(
+                'type' => 'error',
+                'data' => 'Error while update user and hash data'
             );
         }
 
