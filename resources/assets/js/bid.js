@@ -9,7 +9,8 @@ $(function(){
 		    if(amount < current_price){
 				alert('Nhap gia lon hon '+current_price);
 			}else{
-				$.post("/bid-current/1",
+
+				$.post("/bid-current/14",
 		        {
 		          	user_name: name,
 		          	user_id: id,
@@ -17,7 +18,11 @@ $(function(){
 		        },
 		        
 		        function(respont){
-		            console.log(respont);
+		        	console.log(respont);
+		            $('.bid-current-info').html(respont.current_price);
+		            $('.hightest-bid-user').html(respont.current_highest_bidder_name);
+		            $('.input-bid input[name="amount"]').val("");
+		            $('.input-bid input[name="amount"]').attr('placeholder','Đặt giá tối thiểu từ '+respont.current_price+' hoặc hơn')
 		        });
 			}
 		}else
