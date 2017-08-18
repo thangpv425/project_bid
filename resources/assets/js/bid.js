@@ -25,7 +25,7 @@ $(function(){
 
             function(respont){
         		if (respont.type === 'error') {
-        			alert(respont.message);
+        			alert(respont.data);
 				} else {
                     $('.bid-current-info').html(respont.data.current_price);
                     $('.hightest-bid-user').html(respont.data.current_highest_bidder_name);
