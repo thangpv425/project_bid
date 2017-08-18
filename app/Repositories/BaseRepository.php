@@ -78,6 +78,6 @@ abstract class BaseRepository implements BaseInterface
     }
 
     public function latestRow() {
-        return $this->model->latest()->first();
+        return $this->model->latest('id')->first();
     }
 }

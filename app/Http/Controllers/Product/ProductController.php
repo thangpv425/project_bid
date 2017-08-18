@@ -162,7 +162,7 @@ class ProductController extends Controller
                     'created_at'=> $this->time_now
                 );
                 $bid_update = array('current_price' => $request->real_bid_amount+$this->bid_amount_step);
-            }else{
+            } else{
                 $bid_session_user_highest = array(
                     'user_id' => $bid->current_highest_bidder_id,
                     'bid_id' => $bid->id,
@@ -225,23 +225,21 @@ class ProductController extends Controller
      * @return void
      */
     public function amountBetterHightest($bid, $request){
-
         if ($request->user_id == $bid->current_highest_bidder_id) {
             $latestUserBid = $this->user_bidRepository->latestRow();
             try {
                 DB::beginTransaction();
-                $this->user_bidRepository->update($latestUserBid->id, array(
-                    'real_bid_amount' => $request->real_bit_amount,
+                $latestUserBid->update(array(
+                    'real_bid_amount' => $request->real_bid_amount,
                     'type' => $this->bid_type_manual,
                 ));
 
-                $this->bidRepository->update($bid->id, array(
-                    'current_highest_price' => $request->real_bit_amount,
+                $bid->update(array(
+                    'current_highest_price' => $request->real_bid_amount,
                 ));
                 DB::commit();
             } catch (\Exception $exception) {
                DB::rollback();
-               return false;
             }
         } else {
             if ($request->real_bid_amount < $bid->current_highest_price+$this->bid_amount_step) {
@@ -294,7 +292,7 @@ class ProductController extends Controller
      * @return void
      */
     public function amountCostSell($bid, $request){
-        $real_bid_amount = $request->real_bid_amount > $bid->cost_sell ? $bid->cost_sell : $request->real_bid_amount;
+        $real_bid_amount = $bid->cost_sell;
         try {
             $bid_session_user_current = array(
                 'user_id' => $request->user_id,
@@ -318,8 +316,8 @@ class ProductController extends Controller
             if($request->user_id != $bid->current_highest_bidder_id) {
                 $this->user_bidRepository->multiCreate([$bid_session_user_highest,$bid_session_user_current]);
             } else {
-                $userBidLatest = $this->user_bidRepository->latest();
-                $this->user_bidRepository->update($userBidLatest->id, $bid_session_user_current);
+                $userBidLatest = $this->user_bidRepository->latestRow();
+                $userBidLatest->update($bid_session_user_current);
             }
 
             $bid->update([
