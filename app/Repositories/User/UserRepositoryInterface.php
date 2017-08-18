@@ -35,4 +35,10 @@ interface UserRepositoryInterface {
      * @return bool
      */
     function checkMail($email);
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function checkChangeEmail($email);
 }

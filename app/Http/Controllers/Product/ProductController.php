@@ -38,6 +38,7 @@ class ProductController extends Controller
      * @return $current_price
      */
     public function postBid(Request $request, $id) {
+
         $bid = $this->bidRepository->getBid($id);
 
         if(!$bid){
@@ -92,6 +93,7 @@ class ProductController extends Controller
      */
     public function amountFirst($bid, $request){
         try {
+
             if($bid->cost_sell != null && $request->real_bid_amount >= $bid->cost_sell){
                 $bid_session_user_current = array(
                     'user_id' => $request->user_id,
@@ -102,6 +104,7 @@ class ProductController extends Controller
                     'created_at'=> $this->time_now
                 );
                 $bid_update = array(
+
                     'current_price' => $bid->cost_sell,
                     'current_highest_price' => $bid->cost_sell,
                     'current_highest_bidder_id' => $request->user_id,
@@ -114,6 +117,7 @@ class ProductController extends Controller
                 $bid_session_user_current = array(
                     'user_id' => $request->user_id,
                     'bid_id' => $bid->id,
+
                     'real_bid_amount' => $request->real_bid_amount,
                     'bid_amount' => $bid->cost_begin,
                     'bid_type' => $this->bid_type_manual,

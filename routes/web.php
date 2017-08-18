@@ -32,6 +32,14 @@ Route::post('password/reset', 'Auth\ForgotPasswordController@forgot');
 Route::get('password/reset/{hash_key}', 'Auth\ForgotPasswordController@showResetForm')
     ->name('password.reset');
 
+Route::prefix('user')->group(function(){
+    Route::get('change-password', 'User\UserController@showChangePassword');
+    Route::post('change-password', 'User\UserController@changePassword')->name('user.change-password');
+    Route::get('change-email', 'User\UserController@showChangeEmail');
+    Route::post('change-email', 'User\UserController@changeEmail')->name('user.change-email');
+    Route::get('change-email/{hash_key}', 'User\UserController@confirmChangeEmail')->name('user.confirm.change-email');
+});
+
 Route::prefix('mocup')->group(function(){
 	Route::get('home', function(){return view('layouts.home');})->name('mocup-home');
 	Route::get('bid-current', function(){return view('bid.bid_current');})->name('mocup-bid-current');

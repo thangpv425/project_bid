@@ -73,43 +73,44 @@ class ForgotPasswordController extends Controller {
         $user = $this->user->getUserByEmail($request->input('email'));
 
         if (empty($user)) {
-            $message = array(
+            return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'Email not register or blocked!'
-            );
-        } else {
-            try {
-                $hashData = array(
-                    'hash_key' => md5(uniqid()),
-                    'type' => Config::get('constants.hash_type.forgot_password'),
-                    'user_id' =>$user->id,
-                    'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
-                );
-                DB::beginTransaction();
-
-                $newHash = $this->hash->create($hashData);
-                $mailData = array(
-                    'link' => url(config('app.url').route('password.reset',
-                            array(
-                                'hash_key' => $newHash->hash_key,
-                            ))),
-                );
-
-                DB::commit();
-
-                $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Reset password link sent to mail'
-                );
-            } catch (\Exception $exception) {
-                DB::rollback();
-                $message = array(
-                    'type' => 'success',
-                    'data' => 'Error while create new hash'
-                );
-            }
+            ));
         }
+
+        try {
+            $hashData = array(
+                'hash_key' => md5(uniqid()),
+                'type' => Config::get('constants.hash_type.forgot_password'),
+                'user_id' =>$user->id,
+                'expire_at' => Carbon::now()->addMinutes(Config::get('constants.time_during.forgot_password')),
+            );
+            DB::beginTransaction();
+
+            $newHash = $this->hash->create($hashData);
+            $mailData = array(
+                'link' => url(config('app.url').route('password.reset',
+                        array(
+                            'hash_key' => $newHash->hash_key,
+                        ))),
+            );
+
+            DB::commit();
+
+            $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
+            $message = array(
+                'type' => 'success',
+                'data' => 'Reset password link sent to mail'
+            );
+        } catch (\Exception $exception) {
+            DB::rollback();
+            $message = array(
+                'type' => 'success',
+                'data' => 'Error while create new hash'
+            );
+        }
+
         return redirect()->back()->with(compact('message'));
     }
 
@@ -154,39 +155,40 @@ class ForgotPasswordController extends Controller {
 
         $hash = $this->hash->getHash($hashKey,$hashType,$userStatus);
         if (empty($hash)) {
-            $message = array(
+            return view('auth.result')->with('message', array(
                 'title' => 'Reset password',
                 'type' => 'error',
                 'data' => 'Request not valid or timeout'
-            );
-        } else {
-            try {
-                $newAttrs = array(
-                    'password' => bcrypt($request->input('password')),
-                    'remember_token' => Str::random(60),
-                );
-                DB::beginTransaction();
-                $this->user->update($hash->user_id,$newAttrs);
-                $hash->expire_at = Carbon::createFromDate(1970,1,1);
-                $hash->save();
-
-                DB::commit();
-
-                $message = array(
-                    'title' => 'Reset password',
-                    'type' => 'success',
-                    'data' => 'Password reset success'
-                );
-
-            } catch (\Exception $exception) {
-                DB::rollback();
-                $message = array(
-                    'title' => 'Reset password',
-                    'type' => 'error',
-                    'data' => 'Error while update user'
-                );
-            }
+            ));
         }
+
+        try {
+            $newAttrs = array(
+                'password' => bcrypt($request->input('password')),
+                'remember_token' => Str::random(60),
+            );
+            DB::beginTransaction();
+            $this->user->update($hash->user_id,$newAttrs);
+            $hash->expire_at = Carbon::createFromDate(1970,1,1);
+            $hash->save();
+
+            DB::commit();
+
+            $message = array(
+                'title' => 'Reset password',
+                'type' => 'success',
+                'data' => 'Password reset success'
+            );
+
+        } catch (\Exception $exception) {
+            DB::rollback();
+            $message = array(
+                'title' => 'Reset password',
+                'type' => 'error',
+                'data' => 'Error while update user'
+            );
+        }
+
         return view('auth.result')->with('message', $message);
     }
 }
