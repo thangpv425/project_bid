@@ -9,7 +9,8 @@ $(function(){
 		    if(amount < current_price){
 				alert('Nhap gia lon hon '+current_price);
 			}else{
-				$.post("/bid-current/14",
+
+				$.post("/bid-current/16",
 		        {
 		          	user_name: name,
 		          	user_id: id,

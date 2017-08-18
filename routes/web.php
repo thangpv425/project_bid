@@ -67,6 +67,6 @@ Route::prefix('admin')->group(function(){
 	Route::get('orders', function(){return view('admin.order.list');})->name('admin-order');
 });
 
-	Route::get('bid-current/{id}', 'Product\ProductController@getBid')->name('bid-current');
+        Route::get('bid-current/{id}', 'Product\ProductController@getBid')->name('bid-current');
 	Route::post('bid-current/{id}', 'Product\ProductController@postBid')->name('post-bid-amount');
 
