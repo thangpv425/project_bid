@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Mail\MailManager;
+use App\Repositories\Bid\BidRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,16 +31,26 @@ class UserController extends Controller {
     protected $hash;
 
     /**
+     * Bid Repository
+     * @var
+     */
+    protected $bid;
+
+    /**
      * Mail Manager
      * @var
      */
     protected $mailManager;
 
-    public function __construct(UserRepositoryInterface $user, HashRepositoryInterface $hash, MailManager $mailManager) {
+    public function __construct(UserRepositoryInterface $user,
+                                HashRepositoryInterface $hash,
+                                MailManager $mailManager,
+                                BidRepositoryInterface $bid) {
         $this->middleware('auth');
         $this->user = $user;
         $this->hash = $hash;
         $this->mailManager = $mailManager;
+        $this->bid = $bid;
     }
 
     public function index() {
@@ -215,4 +226,49 @@ class UserController extends Controller {
 
         return redirect()->back()->with(compact('message'));
     }
+
+    /**
+     * show delete account form
+     * @return View
+     */
+    public function showInactiveForm() {
+        return view('user.delete_account')->with('email', Auth::user()->email);
+    }
+
+    public function inactive(Request $request) {
+        $this->validate($request,[
+            'password' => 'required|string|min:6'
+        ]);
+
+        $user = Auth::user();
+        if (!Hash::check($request->input('password'), $user->password)) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'Your password not valid!'
+            ));
+        }
+
+        if (!$this->bid->checkInactiveAccount($user->id)) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'You can not inactive yours account now'
+            ));
+        }
+
+        //change user status: inactive
+        $success =$this->user->update($user->id, array('status' => Config::get('constants.user_status.inactive')));
+
+        if (!$success) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'Error while inactive yours account'
+            ));
+        }
+
+        Auth::logout();
+        return redirect('home');
+
+    }
+
+
 }
