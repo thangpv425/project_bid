@@ -17,6 +17,7 @@ class ProductController extends Controller
     protected $bid_amount_step;
     protected $bid_type_manual;
     protected $bid_type_auto;
+
     public function __construct(BidRepositoryInterface $bidRepository,UserBidRepositoryInterface $user_bidRepository) {
         $this->bidRepository = $bidRepository;
         $this->user_bidRepository = $user_bidRepository;
@@ -42,21 +43,28 @@ class ProductController extends Controller
         $bid = $this->bidRepository->getBid($id);
 
         if(!$bid){
-            return array('error'=>'bid is invalid');
+            return array(
+                'type'=> 'error',
+                'data' => 'bid not valid'
+            );
         }
 
         //return $bid->current_highest_bidder_id == null ? 1:0;
         if($bid->current_highest_bidder_id == null) {
             if($request->real_bid_amount < $bid->cost_begin){
-                return array('error'=>'bid must more than cost begin');
-
+                return array(
+                    'type'=> 'error',
+                    'data' => 'bid must more than cost begin'
+                    );
             }
             //return "nguoi tra gia lan dau";
             $this->amountFirst($bid, $request);
         } else{
-
             if ($request->real_bid_amount <  ($bid->current_price+$this->bid_amount_step)) {
-                return $respont = array('error'=>'bid must more than current price');
+                return array(
+                    'type'=> 'error',
+                    'data' => 'bid must more than current price'
+                );
             }
 
             if($request->real_bid_amount < $bid->current_highest_price){
@@ -77,11 +85,14 @@ class ProductController extends Controller
                 }
             }
         }
+
         $respont = array(
-            'success'=>'bid success',
-            'current_highest_bidder_id'=> $bid->current_highest_bidder_id,
-            'current_highest_bidder_name'=>$bid->current_highest_bidder_name,
-            'current_price'=> $bid->current_price,
+            'type' => 'success',
+            'data' => array(
+                'current_highest_bidder_id'=> $bid->current_highest_bidder_id,
+                'current_highest_bidder_name'=>$bid->current_highest_bidder_name,
+                'current_price'=> $bid->current_price,
+            )
         );
 
         return $respont;
@@ -113,7 +124,7 @@ class ProductController extends Controller
                     'time_end' => $this->time_now
                 );
 
-            }else{
+            } else {
                 $bid_session_user_current = array(
                     'user_id' => $request->user_id,
                     'bid_id' => $bid->id,
@@ -166,7 +177,7 @@ class ProductController extends Controller
                     'created_at'=> $this->time_now
                 );
                 $bid_update = array('current_price' => $request->real_bid_amount+$this->bid_amount_step);
-            } else{
+            } else {
                 $bid_session_user_highest = array(
                     'user_id' => $bid->current_highest_bidder_id,
                     'bid_id' => $bid->id,
