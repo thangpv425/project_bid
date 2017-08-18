@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Mail\DeleteAccountMailable;
 use App\Mail\MailManager;
 use App\Repositories\Hash\HashRepositoryInterface;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class UserController extends Controller {
      * @var
      */
     protected $mailManager;
+
 
     public function __construct(UserRepositoryInterface $user,
                                 HashRepositoryInterface $hash,
@@ -242,23 +244,26 @@ class UserController extends Controller {
         if (!$this->user->checkDeleteAccount($user->id)) {
             return redirect()->back()->with('message', array(
                 'type' => 'error',
-                'data' => 'You can not inactive yours account now'
+                'data' => 'You can not delete yours account now because you are highest bidder or not paid for the winning bid',
             ));
         }
 
         //change user status: inactive
-        $success =$this->user->update($user->id, array('status' => Config::get('constants.user_status.inactive')));
+        try {
+            DB::beginTransaction();
+            $this->user->update($user->id, array('status' => Config::get('constants.user_status.inactive')));
+            DB::commit();
 
-        if (!$success) {
+            $this->mailManager->send($user->email, new DeleteAccountMailable());
+            Auth::logout();
+            return redirect('home');
+        }catch (\Exception $exception) {
+            DB::rollback();
             return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'Error while inactive yours account'
             ));
         }
-
-        Auth::logout();
-        return redirect('home');
-
     }
 
 }

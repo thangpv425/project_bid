@@ -34,15 +34,7 @@ class UserRepository implements UserRepositoryInterface {
      */
     public function update($id, array $attributes) {
         $user = User::findOrFail($id);
-        try {
-            DB::beginTransaction();
-            $user->update($attributes);
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollback();
-            return false;
-        }
-        return true;
+        $user->update($attributes);
     }
 
     /**
@@ -110,14 +102,17 @@ class UserRepository implements UserRepositoryInterface {
      */
     public function checkDeleteAccount($userId) {
         $row = Bid::where('current_highest_bidder_id', '=', $userId)
+            ->where('time_begin' , '<', Carbon::now())
             ->where(function ($query) {
                 $query->where('time_end', '>', Carbon::now())
                     ->orWhere(function ($query) {
-                        $query->where('status', '!=', Config::get('constants.bid_status.payment_confirm_success'))
-                            ->where('status', '!=', Config::get('constants.bid_status.shipping'));
+                        $query->where('status', '=', Config::get('constants.bid_status.bid'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.bid_success'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.pending_payment'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.waiting_payment_confirm'));
                     });
-            })->first();
-
+            })
+            ->first();
         return empty($row) ? true : false;
     }
 

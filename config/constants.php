@@ -41,7 +41,7 @@ return [
         'pending_payment' => 4,
         'waiting_payment_confirm' => 5,
         'payment_confirm_success' => 6,
-        'shipping' => 7
+        'waiting_ship' => 7
     ),
 
 ];
