@@ -2,8 +2,10 @@
 namespace App\Repositories\User;
 
 use App\User;
+use App\Models\Bid;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface {
     /**
@@ -28,10 +30,19 @@ class UserRepository implements UserRepositoryInterface {
     /**
      * @param $id
      * @param array $attributes
+     * @return bool
      */
     public function update($id, array $attributes) {
         $user = User::findOrFail($id);
-        $user->update($attributes);
+        try {
+            DB::beginTransaction();
+            $user->update($attributes);
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -93,8 +104,21 @@ class UserRepository implements UserRepositoryInterface {
         return empty($user) ? true : false;
     }
 
-    protected function setNullNewEmail() {
+    /**
+     * @param $userId
+     * @return bool true if ok
+     */
+    public function checkDeleteAccount($userId) {
+        $row = Bid::where('current_highest_bidder_id', '=', $userId)
+            ->where(function ($query) {
+                $query->where('time_end', '>', Carbon::now())
+                    ->orWhere(function ($query) {
+                        $query->where('status', '!=', Config::get('constants.bid_status.payment_confirm_success'))
+                            ->where('status', '!=', Config::get('constants.bid_status.shipping'));
+                    });
+            })->first();
 
+        return empty($row) ? true : false;
     }
 
 }

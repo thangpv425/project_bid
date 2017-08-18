@@ -35,7 +35,9 @@ class UserController extends Controller {
      */
     protected $mailManager;
 
-    public function __construct(UserRepositoryInterface $user, HashRepositoryInterface $hash, MailManager $mailManager) {
+    public function __construct(UserRepositoryInterface $user,
+                                HashRepositoryInterface $hash,
+                                MailManager $mailManager) {
         $this->middleware('auth');
         $this->user = $user;
         $this->hash = $hash;
@@ -215,4 +217,48 @@ class UserController extends Controller {
 
         return redirect()->back()->with(compact('message'));
     }
+
+    /**
+     * show delete account form
+     * @return View
+     */
+    public function deleteUser() {
+        return view('user.delete_account')->with('email', Auth::user()->email);
+    }
+
+    public function deleteUserProcess(Request $request) {
+        $this->validate($request,[
+            'password' => 'required|string|min:6'
+        ]);
+
+        $user = Auth::user();
+        if (!Hash::check($request->input('password'), $user->password)) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'Your password not valid!'
+            ));
+        }
+
+        if (!$this->user->checkDeleteAccount($user->id)) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'You can not inactive yours account now'
+            ));
+        }
+
+        //change user status: inactive
+        $success =$this->user->update($user->id, array('status' => Config::get('constants.user_status.inactive')));
+
+        if (!$success) {
+            return redirect()->back()->with('message', array(
+                'type' => 'error',
+                'data' => 'Error while inactive yours account'
+            ));
+        }
+
+        Auth::logout();
+        return redirect('home');
+
+    }
+
 }
