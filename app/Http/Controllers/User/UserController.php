@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Mail\MailManager;
-use App\Repositories\Bid\BidRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -31,12 +30,6 @@ class UserController extends Controller {
     protected $hash;
 
     /**
-     * Bid Repository
-     * @var
-     */
-    protected $bid;
-
-    /**
      * Mail Manager
      * @var
      */
@@ -44,13 +37,11 @@ class UserController extends Controller {
 
     public function __construct(UserRepositoryInterface $user,
                                 HashRepositoryInterface $hash,
-                                MailManager $mailManager,
-                                BidRepositoryInterface $bid) {
+                                MailManager $mailManager) {
         $this->middleware('auth');
         $this->user = $user;
         $this->hash = $hash;
         $this->mailManager = $mailManager;
-        $this->bid = $bid;
     }
 
     public function index() {
@@ -231,11 +222,11 @@ class UserController extends Controller {
      * show delete account form
      * @return View
      */
-    public function showInactiveForm() {
+    public function deleteUser() {
         return view('user.delete_account')->with('email', Auth::user()->email);
     }
 
-    public function inactive(Request $request) {
+    public function deleteUserProcess(Request $request) {
         $this->validate($request,[
             'password' => 'required|string|min:6'
         ]);
@@ -248,7 +239,7 @@ class UserController extends Controller {
             ));
         }
 
-        if (!$this->bid->checkInactiveAccount($user->id)) {
+        if (!$this->user->checkDeleteAccount($user->id)) {
             return redirect()->back()->with('message', array(
                 'type' => 'error',
                 'data' => 'You can not inactive yours account now'
@@ -269,6 +260,5 @@ class UserController extends Controller {
         return redirect('home');
 
     }
-
 
 }

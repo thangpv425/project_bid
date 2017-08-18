@@ -41,4 +41,11 @@ interface UserRepositoryInterface {
      * @return mixed
      */
     public function checkChangeEmail($email);
+
+    /**
+     * @param $userId
+     * @return mixed
+     */
+    public function checkDeleteAccount($userId);
+
 }

@@ -38,8 +38,8 @@ Route::prefix('user')->group(function(){
     Route::get('change-email', 'User\UserController@showChangeEmail');
     Route::post('change-email', 'User\UserController@changeEmail')->name('user.change-email');
     Route::get('change-email/{hash_key}', 'User\UserController@confirmChangeEmail')->name('user.confirm.change-email');
-    Route::get('inactive-account', 'User\UserController@showInactiveForm');
-    Route::post('inactive-account', 'User\UserController@inactive')->name('user.inactive');
+    Route::get('delete-account', 'User\UserController@deleteUser');
+    Route::post('delete-account', 'User\UserController@deleteUserProcess')->name('user.inactive');
 });
 
 Route::prefix('mocup')->group(function(){
