@@ -4,6 +4,7 @@ namespace App\Repositories\User;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface {
     /**
@@ -28,10 +29,19 @@ class UserRepository implements UserRepositoryInterface {
     /**
      * @param $id
      * @param array $attributes
+     * @return bool
      */
     public function update($id, array $attributes) {
         $user = User::findOrFail($id);
-        $user->update($attributes);
+        try {
+            DB::beginTransaction();
+            $user->update($attributes);
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollback();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -91,10 +101,6 @@ class UserRepository implements UserRepositoryInterface {
             })->first();
 
         return empty($user) ? true : false;
-    }
-
-    protected function setNullNewEmail() {
-
     }
 
 }
