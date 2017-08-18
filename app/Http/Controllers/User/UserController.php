@@ -252,6 +252,9 @@ class UserController extends Controller {
         try {
             DB::beginTransaction();
             $this->user->update($user->id, array('status' => Config::get('constants.user_status.inactive')));
+            $this->mailManager->send($user->email, new DeleteAccountMailable());
+            Auth::logout();
+            return redirect('home');
             DB::commit();
         }catch (\Exception $exception) {
             DB::rollback();
@@ -260,10 +263,5 @@ class UserController extends Controller {
                 'data' => 'Error while inactive yours account'
             ));
         }
-
-        //send mail and logout
-        $this->mailManager->send($user->email, new DeleteAccountMailable());
-        Auth::logout();
-        return redirect('home');
     }
 }
