@@ -9,6 +9,10 @@ class HomeController extends Controller {
 
     protected $bid;
 
+    protected $currentBids;
+
+    protected $successBids;
+
     public function __construct(BidRepositoryInterface $bid) {
         $this->bid = $bid;
     }
@@ -18,23 +22,30 @@ class HomeController extends Controller {
      * @return $this|\Illuminate\Http\JsonResponse
      */
     public function index(Request $request) {
-        $currentBids = $this->bid->getCurrentBids();
-        $successBids = $this->bid->getSuccessBids();
+
+        $this->currentBids = $this->bid->getCurrentBids();
+        $this->successBids = $this->bid->getSuccessBids();
+
         if ($request->ajax()) {
-            if ($request->input('type') == 'current_bid') {
-                $view = view('bid.item', compact('currentBids'))->render();
-            }
-
-            if ($request->input('type') == 'success_bid') {
-                $view = view('bid.item_bid_done', compact('successBids'))->render();
-            }
-
+            $view = $this->getPaginateView($request->input('type'));
             return response()->json([
                 'html' => $view,
                 'type' => $request->input('type'),
             ]);
         }
 
-        return view('layouts.home')->with(compact('currentBids', 'successBids'));
+        return view('layouts.home')->with('currentBids',$this->currentBids)->with('successBids', $this->successBids);
+    }
+
+    protected function getPaginateView($type) {
+        if ($type == 'current_bid') {
+            $view = view('bid.item')->with('currentBids', $this->currentBids)->render();
+        }
+
+        if ($type == 'success_bid') {
+            $view = view('bid.item_bid_done')->with('successBids', $this->successBids)->render();
+        }
+
+        return $view;
     }
 }
