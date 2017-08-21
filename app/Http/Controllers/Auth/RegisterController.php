@@ -82,7 +82,7 @@ class RegisterController extends Controller
         if ($this->user->checkMail($request->input('email')) == false) {
             return redirect()->back()->with('message', array(
                 'type' => 'error',
-                'data' => 'Email already taken'
+                'data' => 'Địa chỉ email đã được sử dụng'
             ));
         }
 
@@ -127,13 +127,13 @@ class RegisterController extends Controller
 
             $message = array(
                 'type' => 'success',
-                'data' => 'Please check yours email to active account'
+                'data' => 'Hãy kiểm tra email để kích hoạt tài khoản'
             );
         }catch(\Exception $e){
             DB::rollback();
             $message = array(
                 'type' => 'success',
-                'data' => 'Error while create new hash'
+                'data' => 'Lỗi khi tạo hash mới'
             );
         }
 
@@ -150,7 +150,7 @@ class RegisterController extends Controller
         if (empty($hash) || (empty($user))) {
             return redirect()->back()->with('message', array(
                 'type' => 'error',
-                'data' => 'User Account or hash has been deleted from system'
+                'data' => 'Tài khoản người dùng hoặc bảng hash đã bị xóa khỏi hệ thống'
             ));
         }
 
@@ -160,7 +160,7 @@ class RegisterController extends Controller
             $user->save();
             $message = array(
                 'type' => 'success',
-                'data' => 'Yours account active success!'
+                'data' => 'Tài khoản của bạn được kích hoạt thành công!'
             );
             DB::commit();
             $this->hash->cancelRegisterRequest($user->email);
@@ -168,7 +168,7 @@ class RegisterController extends Controller
             DB::rollback();
             $message = array(
                 'type' => 'error',
-                'data' => 'Error while update user and hash'
+                'data' => 'Lỗi khi cập nhập thông tin người dùng hoặc bảng hash'
             );
         }
         

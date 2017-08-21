@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('login', 'Auth\LoginController@show')->name('login');
 Route::post('login', 'Auth\LoginController@login');
@@ -24,7 +22,6 @@ Route::get('register', 'Auth\RegisterController@show')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
 Route::get('active_user/{hash_key}', 'Auth\RegisterController@active')->name('register.active');
 
-Route::get('/home', 'User\UserController@index')->name('home');
 
 Route::post('password/email', 'Auth\ForgotPasswordController@sendMail')->name('password.email');
 Route::get('password/reset', 'Auth\ForgotPasswordController@show')->name('password.request');
@@ -40,6 +37,7 @@ Route::prefix('user')->group(function(){
     Route::get('change-email/{hash_key}', 'User\UserController@confirmChangeEmail')->name('user.confirm.change-email');
     Route::get('delete-account', 'User\UserController@deleteUser');
     Route::post('delete-account', 'User\UserController@deleteUserProcess')->name('user.inactive');
+    Route::get('profile', 'User\UserController@showProfile')->name('user.profile');
 });
 
 Route::prefix('mocup')->group(function(){

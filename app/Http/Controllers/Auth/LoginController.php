@@ -28,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -65,7 +65,7 @@ class LoginController extends Controller
         }
         return redirect()->back()->with('message', array(
             'type' => 'error',
-            'data' => 'Email or password not valid'
+            'data' => 'Email hoặc mật khẩu không hợp lệ'
         ));
     }
 
@@ -75,6 +75,6 @@ class LoginController extends Controller
      */
     public function logout() {
         Auth::logout();
-        return redirect('home');
+        return redirect()->route('home');
     }
 }
