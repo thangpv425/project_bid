@@ -17,7 +17,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
                 ->where('time_begin', '<=', Carbon::now())
                 ->where('time_end', '>=', Carbon::now());
         })->first();
-        return $bid? $bid:null;
+        return (!empty($bid))? $bid:null;
     }
 
 }

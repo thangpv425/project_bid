@@ -1,6 +1,6 @@
 @extends('bid.bid_detail')
 @section('bid')
-	<div class="bid-info">
+	<div class="bid-info" data="{{$bid->id}}">
 		<div class="time text-center">
 			<span class="time-day">01</span> Ngày <span class="time-hour">07 : 10</span>
 		</div>
@@ -15,6 +15,7 @@
 			<span class="hightest-bid-user">{{$bid->current_highest_bidder_name}}</span>
 		</div>
 	</div>
+	<input type="hidden" name="bid_id" value="{{$bid->id}}">
 	<div class="input-bid">
 		@if($bid->current_price != null)
 			<input type="text" name="amount" placeholder="Đặt giá tối thiểu từ {{$bid->current_price+500}} hoặc hơn">

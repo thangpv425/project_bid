@@ -9,4 +9,5 @@ interface BaseInterface
     public function multiCreate($input);
     public function update($id, $input);
     public function delete($id);
+    public function latestRow();
 }

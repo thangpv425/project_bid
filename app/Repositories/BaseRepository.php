@@ -76,5 +76,8 @@ abstract class BaseRepository implements BaseInterface
         $ids = is_array($ids) ? $ids : [$ids];
         return $this->model->whereIn('id', $ids)->delete();
     }
-    
+
+    public function latestRow() {
+        return $this->model->latest('id')->first();
+    }
 }
