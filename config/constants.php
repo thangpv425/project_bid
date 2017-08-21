@@ -41,7 +41,11 @@ return [
         'pending_payment' => 4,
         'waiting_payment_confirm' => 5,
         'payment_confirm_success' => 6,
-        'waiting_ship' => 7
+        'bid_success' => 7
     ),
 
+    'number_item_per_page' => array(
+        'success_bids' => 8,
+        'current_bids' => 8,
+    ),
 ];

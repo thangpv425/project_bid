@@ -19,4 +19,8 @@ class Bid extends Model
     	'current_price',
     	'current_highest_bidder_name'
     ];
+
+    public function product() {
+        return $this->hasOne('App\Models\Product', 'id');
+    }
 }
