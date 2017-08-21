@@ -11,11 +11,8 @@
 
                 <div class="row">
                     <div class="col-md-offset-4 col-md-4 text-center" id="show-more-current-bid">
-                        <button class="btn btn-primary">Xem thêm sản phẩm đã đấu giá</button>
+                        <a class="btn btn-primary" href="{{route('current-bids')}}">Xem thêm sản phẩm đã đấu giá</a>
                     </div>
-                </div>
-                <div class="ajax-load text-center" style="display:none;" id="ajax-load-current">
-                    <p><img src="http://demo.itsolutionstuff.com/plugin/loader.gif">Đang load</p>
                 </div>
             @else
                 <p class="text-center">Hiện không có phiên đấu giá nào đang diễn ra</p>
@@ -29,11 +26,8 @@
                 </div>
                 <div class="row">
                     <div class="col-md-offset-4 col-md-4 text-center" id="show-more-success-bid">
-                        <button class="btn btn-primary">Xem thêm sản phẩm đã đấu giá</button>
+                        <a class="btn btn-primary" href="{{route('success-bids')}}">Xem thêm sản phẩm đã đấu giá</a>
                     </div>
-                </div>
-                <div class="ajax-load text-center" style="display:none;" id="ajax-load-success">
-                    <p><img src="http://demo.itsolutionstuff.com/plugin/loader.gif">Đang load</p>
                 </div>
             @else
                 <p class="text-center">Hiện không có phiên đấu giá nào thành công</p>
@@ -41,6 +35,3 @@
 		</div>
 	</div>
 @endsection
-
-{!! Html::script('https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js') !!}
-{!! Html::script('js/home.js') !!}
