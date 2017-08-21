@@ -35,8 +35,13 @@ return [
     ),
 
     'bid_status' => array(
-        'begining' => 1,
-        'success' => 2,
+        'bid' => 1,
+        'bid_success' => 2,
+        'bid_fail' => 3,
+        'pending_payment' => 4,
+        'waiting_payment_confirm' => 5,
+        'payment_confirm_success' => 6,
+        'waiting_ship' => 7
     ),
 
 ];

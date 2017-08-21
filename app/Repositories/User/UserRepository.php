@@ -2,8 +2,10 @@
 namespace App\Repositories\User;
 
 use App\User;
+use App\Models\Bid;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface {
     /**
@@ -28,6 +30,7 @@ class UserRepository implements UserRepositoryInterface {
     /**
      * @param $id
      * @param array $attributes
+     * @return bool
      */
     public function update($id, array $attributes) {
         $user = User::findOrFail($id);
@@ -93,8 +96,24 @@ class UserRepository implements UserRepositoryInterface {
         return empty($user) ? true : false;
     }
 
-    protected function setNullNewEmail() {
-
+    /**
+     * @param $userId
+     * @return bool true if ok
+     */
+    public function checkDeleteAccount($userId) {
+        $row = Bid::where('current_highest_bidder_id', '=', $userId)
+            ->where('time_begin' , '<', Carbon::now())
+            ->where(function ($query) {
+                $query->where('time_end', '>', Carbon::now())
+                    ->orWhere(function ($query) {
+                        $query->where('status', '=', Config::get('constants.bid_status.bid'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.bid_success'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.pending_payment'))
+                            ->orWhere('status', '=', Config::get('constants.bid_status.waiting_payment_confirm'));
+                    });
+            })
+            ->first();
+        return empty($row) ? true : false;
     }
 
 }
