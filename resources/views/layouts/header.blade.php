@@ -11,7 +11,7 @@
 			</button>
 
 			<!-- Branding Image -->
-			<a class="navbar-brand" href="{{route('mocup-home')}}">
+			<a class="navbar-brand" href="{{route('home')}}">
 				<img src="{{asset('/storage/image/logo.svg')}}">
 			</a>
 		</div>
@@ -27,35 +27,30 @@
 				<!-- Authentication Links -->
 				<li><a href="#">Zippo</a></li>
 				<li><a href="#">Figure</a></li>
-				<li><a href="#">Mo hinh</a></li>
-				<li><a href="#">Nuoc hoa</a></li>
+				<li><a href="#">Mô hình</a></li>
+				<li><a href="#">Nước hoa</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				@if(!Auth::guest())
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-							aaaaaaaa <span class="caret"></span>
+							{{Auth::user()->nickname}} <span class="caret"></span>
 						</a>
 
 						<ul class="dropdown-menu" role="menu">
 							<li>
-								<a href="#">
-									<img src="{{asset('/storage/image/trangcanhan.svg')}}" class="icon-menu">Trang ca nhan
+								<a href="{{route('user.profile')}}">
+									<img src="{{asset('/storage/image/trangcanhan.svg')}}" class="icon-menu">Trang cá nhân
 								</a>
 							</li>
 							<li>
 								<a href="{{route('mocup-bid-manager')}}">
-									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Quan li giao dich
+									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Quản lý giao dịch
 								</a>
 							</li>
 							<li>
 								<a href="#">
-									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Phien dau tham gia
-								</a>
-							</li>
-							<li>
-								<a href="{{route('mocup-user-info')}}">
-									<img src="{{asset('/storage/image/chinhsua.svg')}}" class="icon-menu">Chinh sua tai khoan
+									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Phiên đấu giá tham gia
 								</a>
 							</li>
 							<li>
@@ -63,7 +58,7 @@
 									onclick="event.preventDefault();
 											 document.getElementById('logout-form').submit();">
 									<img src="{{asset('/storage/image/thoat.svg')}}" class="icon-menu">
-									Logout
+									Đăng xuất
 								</a>
 
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -73,8 +68,8 @@
 						</ul>
 					</li>
 				@else
-					<li><a class="btn-login" href="{{route('login')}}">Dang nhap</a></li>
-					<li><a class="btn-rigister btn-green" href="{{route('register')}}">Dang ki</a></li>
+					<li><a class="btn-login" href="{{route('login')}}">Đăng nhập</a></li>
+					<li><a class="btn-rigister btn-green" href="{{route('register')}}">Đăng ký</a></li>
 				@endif			
 			</ul>
 		</div>

@@ -75,7 +75,7 @@ class ForgotPasswordController extends Controller {
         if (empty($user)) {
             return redirect()->back()->with('message', array(
                 'type' => 'error',
-                'data' => 'Email not register or blocked!'
+                'data' => 'Địa chỉ Email không được đăng ký hoặc bị block!'
             ));
         }
 
@@ -101,13 +101,13 @@ class ForgotPasswordController extends Controller {
             $this->mailManager->send($request->input('email'), new ForgotPasswordMailable($mailData));
             $message = array(
                 'type' => 'success',
-                'data' => 'Reset password link sent to mail'
+                'data' => 'Link reset mật khẩu đã được gửi đến địa chỉ email'
             );
         } catch (\Exception $exception) {
             DB::rollback();
             $message = array(
                 'type' => 'success',
-                'data' => 'Error while create new hash'
+                'data' => 'Lỗi khi tạo hash mới'
             );
         }
 
@@ -133,7 +133,7 @@ class ForgotPasswordController extends Controller {
         return view('auth.result')->with('message',array(
             'title' => 'Reset password',
             'type' => 'error',
-            'data' => 'Request not valid or timeout'
+            'data' => 'Yêu cầu không hợp lệ hoặc hết thời hạn'
         ));
     }
 
@@ -156,9 +156,9 @@ class ForgotPasswordController extends Controller {
         $hash = $this->hash->getHash($hashKey,$hashType,$userStatus);
         if (empty($hash)) {
             return view('auth.result')->with('message', array(
-                'title' => 'Reset password',
+                'title' => 'Đặt lại mật khẩu',
                 'type' => 'error',
-                'data' => 'Request not valid or timeout'
+                'data' => 'Yêu cầu không hợp lệ hoặc hết thời hạn'
             ));
         }
 
@@ -175,17 +175,17 @@ class ForgotPasswordController extends Controller {
             DB::commit();
 
             $message = array(
-                'title' => 'Reset password',
+                'title' => 'Đặt lại mật khẩu',
                 'type' => 'success',
-                'data' => 'Password reset success'
+                'data' => 'Đặt lại mật khẩu thành công'
             );
 
         } catch (\Exception $exception) {
             DB::rollback();
             $message = array(
-                'title' => 'Reset password',
+                'title' => 'Đặt lại mật khẩu',
                 'type' => 'error',
-                'data' => 'Error while update user'
+                'data' => 'Lỗi khi cập nhật mật khẩu mới'
             );
         }
 

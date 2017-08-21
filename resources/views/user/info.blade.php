@@ -9,7 +9,7 @@
 				</div>
 			</div>
 			<div class="col-sm-9">
-				<h3 class="name">Dang Hoang Linh</h3>
+				<h3 class="name">{{Auth::user()->nickname}}</h3>
 				<div class="clearfix">
 					<div class="pull-left">
 						<span>0</span>
