@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Mail\DeleteAccountMailable;
 use App\Mail\MailManager;
+use App\Repositories\Bid\BidRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,6 +31,8 @@ class UserController extends Controller {
      */
     protected $hash;
 
+    protected $bid;
+
     /**
      * Mail Manager
      * @var
@@ -39,11 +42,13 @@ class UserController extends Controller {
 
     public function __construct(UserRepositoryInterface $user,
                                 HashRepositoryInterface $hash,
+                                BidRepositoryInterface $bid,
                                 MailManager $mailManager) {
         $this->middleware('auth');
         $this->user = $user;
         $this->hash = $hash;
         $this->mailManager = $mailManager;
+        $this->bid = $bid;
     }
 
     public function index() {
@@ -265,10 +270,41 @@ class UserController extends Controller {
         }
     }
 
-    /**
-     *
-     */
+
     public function showProfile() {
         return view('user.info');
     }
+
+
+    public function getJoiningBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getJoiningBids($userId);
+        return view('user.joining-bid')->with(compact('bids'));
+    }
+
+
+    public function getFailBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getFailBids($userId);
+        return view('user.fail-bids')->with(compact('bids'));
+    }
+
+    public function getPayingBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getPayingBids($userId);
+        return view('user.paying-bids')->with(compact('bids'));
+    }
+
+    public function getPaidBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getPaidBids($userId);
+        return view('user.paid-bids')->with(compact('bids'));
+    }
+
+    public function getCancelBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getCancelBids($userId);
+        return view('user.cancel-bids')->with(compact('bids'));
+    }
+
 }

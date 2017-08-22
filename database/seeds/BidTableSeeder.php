@@ -10,8 +10,7 @@ class BidTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         //
         for($i=1; $i<11; $i++ ){
         	DB::table('bids')->insert([
@@ -22,7 +21,7 @@ class BidTableSeeder extends Seeder
         		'cost_sell'=>10000,
         		'current_highest_bidder_id' => 1,
         		'time_begin'=>'2017-08-11 06:43:43',
-        		'time_end'=>'2017-08-12 06:43:43',
+        		'time_end'=>'2017-08-24 06:43:43',
         		'status'=>2,
         	]);
         }

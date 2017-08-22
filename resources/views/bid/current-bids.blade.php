@@ -4,13 +4,16 @@
     <div class="home">
         <div class="container">
             <h1>Các sản phẩm đang đấu giá</h1>
-            @if (count($currentBids) > 0)
+            @if (count($bids) > 0)
                 <div class="row list-item" id="current_bid">
-                    @include('bid.item')
+                    @foreach($bids as $bid)
+                        <div class="col-sm-3 col-md-3">
+                             @include('bid.item')
+                        </div>
+                    @endforeach
                 </div>
             @endif
-            {{$currentBids->links()}}
-
+            {{$bids->links()}}
         </div>
     </div>
 @endsection

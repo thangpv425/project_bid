@@ -35,17 +35,19 @@ return [
     ),
 
     'bid_status' => array(
-        'bid' => 1,
+        'current_bid' => 1,
         'bid_success' => 2,
         'bid_fail' => 3,
         'pending_payment' => 4,
         'waiting_payment_confirm' => 5,
         'payment_confirm_success' => 6,
-        'bid_success' => 7
+        'waiting_shipping' => 7,
+        'cancel' => 8,
     ),
 
     'number_item_per_page' => array(
         'success_bids' => 8,
         'current_bids' => 8,
+        'fail-bid' => 8,
     ),
 ];

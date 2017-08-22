@@ -29,12 +29,12 @@ class HomeController extends Controller
     }
 
     public function currentBids() {
-        $currentBids = $this->bid->getCurrentBids();
-        return view('bid.current-bids')->with('currentBids', $currentBids);
+        $bids = $this->bid->getCurrentBids();
+        return view('bid.current-bids')->with(compact('bids'));
     }
 
     public function successBids() {
-        $successBids = $this->bid->getSuccessBids();
-        return view('bid.success-bids')->with('successBids', $successBids);
+        $bids = $this->bid->getSuccessBids();
+        return view('bid.success-bids')->with(compact('bids'));
     }
 }

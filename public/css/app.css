@@ -12432,3 +12432,11 @@ body {
   padding: 20px;
 }
 
+.user-page .choose {
+  display: none;
+}
+
+.display-block {
+  display: block !important;
+}
+

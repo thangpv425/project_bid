@@ -8,4 +8,12 @@ interface BidRepositoryInterface {
    public function getCurrentBids();
 
    public function getSuccessBids();
+
+   public function getJoiningBids($userId);
+
+    public function getPayingBids($userId);
+
+    public function getPaidBids($userId);
+
+    public function getCancelBids($userId);
 }

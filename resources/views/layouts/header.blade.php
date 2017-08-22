@@ -44,13 +44,18 @@
 								</a>
 							</li>
 							<li>
-								<a href="{{route('mocup-bid-manager')}}">
-									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Quản lý giao dịch
+								<a href="{{route('current-bids')}}">
+									<img src="{{asset('/storage/image/quanli.svg')}}" class="icon-menu">Sản phẩm đang đấu giá
+								</a>
+							</li>
+							<li>
+								<a href="{{route('success-bids')}}">
+									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Sản phẩm đã kết thúc đấu giá
 								</a>
 							</li>
 							<li>
 								<a href="#">
-									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Phiên đấu giá tham gia
+									<img src="{{asset('/storage/image/phiendau.svg')}}" class="icon-menu">Mail box
 								</a>
 							</li>
 							<li>

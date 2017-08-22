@@ -24,7 +24,6 @@ Route::get('register', 'Auth\RegisterController@show')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
 Route::get('active_user/{hash_key}', 'Auth\RegisterController@active')->name('register.active');
 
-
 Route::post('password/email', 'Auth\ForgotPasswordController@sendMail')->name('password.email');
 Route::get('password/reset', 'Auth\ForgotPasswordController@show')->name('password.request');
 Route::post('password/reset', 'Auth\ForgotPasswordController@forgot');
@@ -40,6 +39,11 @@ Route::prefix('user')->group(function(){
     Route::get('delete-account', 'User\UserController@deleteUser');
     Route::post('delete-account', 'User\UserController@deleteUserProcess')->name('user.inactive');
     Route::get('profile', 'User\UserController@showProfile')->name('user.profile');
+    Route::get('joining-bids', 'User\UserController@getJoiningBids')->name('user.joining-bids');
+    Route::get('fail-bids', 'User\UserController@getFailBids')->name('user.fail-bids');
+    Route::get('paying-bids', 'User\UserController@getPayingBids')->name('user.paying-bids');
+    Route::get('paid-bids', 'User\UserController@getPaidBids')->name('user.paid-bids');
+    Route::get('cancel-bids', 'User\UserController@getCancelBids')->name('user.cancel-bids');
 });
 
 Route::prefix('mocup')->group(function(){
@@ -52,7 +56,6 @@ Route::prefix('mocup')->group(function(){
 	Route::get('change-password', function(){return view('user.change_password');})->name('mocup-change-password');
 	Route::get('delete-account', function(){return view('user.delete_account');})->name('mocup-delete-account');
 	Route::get('list-mail', function(){return view('user.list_mail');})->name('mocup-list-mail');
-
 });
 
 Route::prefix('admin')->group(function(){

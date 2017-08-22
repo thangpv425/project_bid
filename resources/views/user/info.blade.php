@@ -27,14 +27,20 @@
 			<form>
 				<h3 class="title">Thông tin chung</h3>
 				<div class="form-group">
-					<label>Tên người dùng</label>
-					<input type="text" name="name" class="form-control">
+					<label>Nickname</label>
+					{{Auth::user()->nickname}}
 				</div>
 				<div class="form-group">
 					<label>Địa chỉ email</label>
-					<input type="email" name="name" class="form-control">
+					{{Auth::user()->email}}
+					<a href="{{route('user.change-email')}}">Thay đổi</a>
 				</div>
-				<h3 class="title">Địa chỉ nhận hàng</h3>
+				<div class="form-group">
+					<label>Mật khẩu</label>
+					***********
+					<a href="{{route('user.change-password')}}">Thay đổi</a>
+				</div>
+				<h3 class="title">Thông tin giao hàng</h3>
 				<div class="form-group">
 					<label>Tên người nhận hàng</label>
 					<input type="text" name="name" class="form-control">
@@ -46,24 +52,6 @@
 				<div class="form-group">
 					<label>Số điện thoại</label>
 					<input type="text" name="name" class="form-control">
-				</div>
-				<div class="clearfix">
-					<div class="pull-left">
-						<div class="form-group">
-							<label>Tỉnh/TP</label>
-							<select class="form-control">
-								<option>Ha noi</option>
-								<option>Ho chi minh</option>
-							</select>
-						</div>
-					</div>
-					<div class="pull-left">
-						<label>Quận huyện</label>
-							<select class="form-control">
-								<option>Ha noi</option>
-								<option>Ho chi minh</option>
-							</select>
-					</div>
 				</div>
 				<div class="form-group">
 					<label>Địa chỉ</label>
