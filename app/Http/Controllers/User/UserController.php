@@ -271,36 +271,58 @@ class UserController extends Controller {
     }
 
 
+    /**
+     * show profile
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showProfile() {
         return view('user.info');
     }
 
-
+    /**
+     * get joining bids
+     * @return View
+     */
     public function getJoiningBids() {
         $userId = Auth::user()->id;
         $bids = $this->bid->getJoiningBids($userId);
         return view('user.joining-bid')->with(compact('bids'));
     }
 
-
+    /**
+     * get fail bids
+     * @return View
+     */
     public function getFailBids() {
         $userId = Auth::user()->id;
         $bids = $this->bid->getFailBids($userId);
         return view('user.fail-bids')->with(compact('bids'));
     }
 
+    /**
+     * get paying bids
+     * @return View
+     */
     public function getPayingBids() {
         $userId = Auth::user()->id;
         $bids = $this->bid->getPayingBids($userId);
         return view('user.paying-bids')->with(compact('bids'));
     }
 
+    /**
+     * get paid bids
+     * @return view
+     */
     public function getPaidBids() {
         $userId = Auth::user()->id;
         $bids = $this->bid->getPaidBids($userId);
         return view('user.paid-bids')->with(compact('bids'));
     }
 
+    /**
+     * get cancel bids
+     * @return View
+     */
     public function getCancelBids() {
         $userId = Auth::user()->id;
         $bids = $this->bid->getCancelBids($userId);
