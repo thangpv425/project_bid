@@ -12,6 +12,8 @@
 */
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('/current-bids', 'HomeController@currentBids')->name('current-bids');
+Route::get('/success-bids', 'HomeController@successBids')->name('success-bids');
 
 Route::get('login', 'Auth\LoginController@show')->name('login');
 Route::post('login', 'Auth\LoginController@login');
