@@ -13,6 +13,7 @@
 						</ul>
 					</li>
 					<li class="user-page-menu-item"><a href="{{route('user.fail-bids')}}">Cuộc đấu giá không thành công</a></li>
+					<li class="user-page-menu-item"><a href="{{route('user.profile')}}">Thông tin người dùng</a></li>
 					<li class="user-page-menu-item"><a href="{{route('mocup-list-mail')}}">Mail box</a></li>
 				</ul>
 			</div>
