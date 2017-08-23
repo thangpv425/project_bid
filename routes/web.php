@@ -39,6 +39,7 @@ Route::prefix('user')->group(function(){
     Route::get('delete-account', 'User\UserController@deleteUser');
     Route::post('delete-account', 'User\UserController@deleteUserProcess')->name('user.inactive');
     Route::get('profile', 'User\UserController@showProfile')->name('user.profile');
+    Route::post('update-profile', 'User\UserController@updateProfile')->name('user.update-profile');
     Route::get('joining-bids', 'User\UserController@getJoiningBids')->name('user.joining-bids');
     Route::get('fail-bids', 'User\UserController@getFailBids')->name('user.fail-bids');
     Route::get('paying-bids', 'User\UserController@getUnpaidBids')->name('user.paying-bids');

@@ -276,7 +276,40 @@ class UserController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function showProfile() {
-        return view('user.info');
+        $user = Auth::user();
+        $subStr = explode("@", $user->email);
+        $user->email = '@'.end($subStr);
+        $prefectures = Config::get('constants.japan_prefectures');
+        return view('user.info')->with(compact('user'))->with(compact('prefectures'));
+    }
+
+    public function updateProfile(Request $request) {
+        try {
+            $updateData = array(
+                'ship_name' => $request->input('ship_name'),
+                'ship_tel'  => $request->input('ship_tel'),
+                'ship_zip'  => $request->input('ship_zip'),
+                'ship_address' => $request->input('ship_address'),
+                'ship_prefecture' => $request->input('ship_prefecture'),
+                'post_office' => $request->input('post_office'),
+            );
+
+            DB::beginTransaction();
+            $this->user->update(Auth::user()->id, $updateData);
+            DB::commit();
+        } catch (\Exception $exception) {
+            $message = array(
+                'type' => 'error',
+                'data' => 'Update thông tin không thành công',
+            );
+            DB:rollback();
+        }
+
+        $message = array(
+            'type' => 'success',
+            'data' => 'Update thông tin thành công',
+        );
+        return redirect()->back()->with(compact('message'));
     }
 
     /**
