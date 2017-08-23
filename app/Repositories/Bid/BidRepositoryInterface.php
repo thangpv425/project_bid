@@ -11,9 +11,9 @@ interface BidRepositoryInterface {
 
    public function getJoiningBids($userId);
 
-    public function getPayingBids($userId);
+    public function getUnpaidBids($userId);
 
     public function getPaidBids($userId);
 
-    public function getCancelBids($userId);
+    public function getCanceledBids($userId);
 }

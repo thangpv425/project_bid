@@ -303,9 +303,9 @@ class UserController extends Controller {
      * get paying bids
      * @return View
      */
-    public function getPayingBids() {
+    public function getUnpaidBids() {
         $userId = Auth::user()->id;
-        $bids = $this->bid->getPayingBids($userId);
+        $bids = $this->bid->getUnpaidBids($userId);
         return view('user.paying-bids')->with(compact('bids'));
     }
 
@@ -323,9 +323,9 @@ class UserController extends Controller {
      * get cancel bids
      * @return View
      */
-    public function getCancelBids() {
+    public function getCanceledBids() {
         $userId = Auth::user()->id;
-        $bids = $this->bid->getCancelBids($userId);
+        $bids = $this->bid->getCanceledBids($userId);
         return view('user.cancel-bids')->with(compact('bids'));
     }
 

@@ -41,9 +41,9 @@ Route::prefix('user')->group(function(){
     Route::get('profile', 'User\UserController@showProfile')->name('user.profile');
     Route::get('joining-bids', 'User\UserController@getJoiningBids')->name('user.joining-bids');
     Route::get('fail-bids', 'User\UserController@getFailBids')->name('user.fail-bids');
-    Route::get('paying-bids', 'User\UserController@getPayingBids')->name('user.paying-bids');
+    Route::get('paying-bids', 'User\UserController@getUnpaidBids')->name('user.paying-bids');
     Route::get('paid-bids', 'User\UserController@getPaidBids')->name('user.paid-bids');
-    Route::get('cancel-bids', 'User\UserController@getCancelBids')->name('user.cancel-bids');
+    Route::get('cancel-bids', 'User\UserController@getCanceledBids')->name('user.cancel-bids');
 });
 
 Route::prefix('mocup')->group(function(){

@@ -77,7 +77,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
         return $bids;
     }
 
-    public function getPayingBids($userId) {
+    public function getUnpaidBids($userId) {
         $now = Carbon::now();
         $bids = Bid::where('current_highest_bidder_id', '=', $userId)
             ->where(function($query) {
@@ -102,7 +102,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
         return $bids;
     }
 
-    public function getCancelBids($userId) {
+    public function getCanceledBids($userId) {
         $now = Carbon::now();
         $bids = Bid::where('current_highest_bidder_id', '=', $userId)
             ->where('status', '=', Config::get('constants.bid_status.cancel'))
