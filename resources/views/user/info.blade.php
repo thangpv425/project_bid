@@ -77,10 +77,10 @@
 				</div>
 
 				<div class="form-group row">
-					<div class="col-md-6">
+					<div class="col-md-3">
 						<input type="radio" name="address-type" value="address" checked >Sử dụng địa chỉ riêng<br>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-3" >
 						<input  type="radio" name="address-type" value="post-office">Gửi đến bưu điện<br>
 					</div>
 				</div>
@@ -156,7 +156,6 @@
                 })
             })
 		</script>
-
 		<script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
 	</div>
 @endsection
