@@ -53,9 +53,14 @@
 					<label>Số điện thoại</label>
 					<input type="text" name="name" class="form-control">
 				</div>
+				<input type="hidden" class="p-country-name" value="Vietnam">
+				<div class="form-group">
+					<label>Zip code</label>
+					<input type="text" class="p-postal-code" size="8" maxlength="8">
+				</div>
 				<div class="form-group">
 					<label>Địa chỉ</label>
-					<input type="text" name="" class="form-control">
+					<input type="text" class="p-region p-locality p-street-address p-extended-address" />
 				</div>
 				<div class="form-group text-right">
 					<button class="btn btn-primary">Lưu</button>
@@ -68,5 +73,7 @@
 				$('.user-page-menu li:nth-child('+menu+')').addClass('holder');
 			})
 		</script>
+
+		<script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
 	</div>
 @endsection
