@@ -24,10 +24,8 @@
 
                         <div class="form-group{{ $errors->has('nickname') ? ' has-error' : '' }}">
                             <label for="nickname" class="col-md-4 control-label">Biệt danh</label>
-
                             <div class="col-md-6">
                                 <input id="nickname" type="text" class="form-control" name="nickname" value="{{ old('nickname') }}" required autofocus>
-
                                 @if ($errors->has('nickname'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('nickname') }}</strong>

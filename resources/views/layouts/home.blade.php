@@ -6,7 +6,11 @@
 			<h1>Các sản phẩm đang đấu giá</h1>
             @if (count($currentBids) > 0)
                 <div class="row list-item" id="current_bid">
-                    @include('bid.item')
+                    @foreach($currentBids as $bid)
+                        <div class="col-sm-3 col-md-3">
+                            @include('bid.item')
+                        </div>
+                    @endforeach
                 </div>
 
                 <div class="row">
@@ -22,7 +26,11 @@
             <h1>Các sản phẩm đã đấu giá</h1>
             @if (count($successBids) > 0)
                 <div class="row list-item" id="success_bid">
-                    @include('bid.item_bid_done')
+                    @foreach($successBids as $bid)
+                        <div class="col-sm-3 col-md-3">
+                            @include('bid.item_bid_done')
+                        </div>
+                    @endforeach
                 </div>
                 <div class="row">
                     <div class="col-md-offset-4 col-md-4 text-center" id="show-more-success-bid">

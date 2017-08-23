@@ -22,7 +22,6 @@ $(function(){
                 user_id: id,
                 real_bid_amount: amount
             },
-
             function(respont){
         		if (respont.type === 'error') {
         			alert(respont.data);

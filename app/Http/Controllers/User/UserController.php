@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Mail\DeleteAccountMailable;
 use App\Mail\MailManager;
+use App\Repositories\Bid\BidRepositoryInterface;
 use App\Repositories\Hash\HashRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,6 +31,8 @@ class UserController extends Controller {
      */
     protected $hash;
 
+    protected $bid;
+
     /**
      * Mail Manager
      * @var
@@ -39,11 +42,13 @@ class UserController extends Controller {
 
     public function __construct(UserRepositoryInterface $user,
                                 HashRepositoryInterface $hash,
+                                BidRepositoryInterface $bid,
                                 MailManager $mailManager) {
         $this->middleware('auth');
         $this->user = $user;
         $this->hash = $hash;
         $this->mailManager = $mailManager;
+        $this->bid = $bid;
     }
 
     public function index() {
@@ -265,10 +270,96 @@ class UserController extends Controller {
         }
     }
 
+
     /**
-     *
+     * show profile
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function showProfile() {
-        return view('user.info');
+        $user = Auth::user();
+        $subStr = explode("@", $user->email);
+        $user->email = '@'.end($subStr);
+        $prefectures = Config::get('constants.japan_prefectures');
+        return view('user.info')->with(compact('user'))->with(compact('prefectures'));
     }
+
+    public function updateProfile(Request $request) {
+        try {
+            $updateData = array(
+                'ship_name' => $request->input('ship_name'),
+                'ship_tel'  => $request->input('ship_tel'),
+                'ship_zip'  => $request->input('ship_zip'),
+                'ship_address' => $request->input('ship_address'),
+                'ship_prefecture' => $request->input('ship_prefecture'),
+                'post_office' => $request->input('post_office'),
+            );
+
+            DB::beginTransaction();
+            $this->user->update(Auth::user()->id, $updateData);
+            DB::commit();
+        } catch (\Exception $exception) {
+            $message = array(
+                'type' => 'error',
+                'data' => 'Update thông tin không thành công',
+            );
+            DB:rollback();
+        }
+
+        $message = array(
+            'type' => 'success',
+            'data' => 'Update thông tin thành công',
+        );
+        return redirect()->back()->with(compact('message'));
+    }
+
+    /**
+     * get joining bids
+     * @return View
+     */
+    public function getJoiningBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getJoiningBids($userId);
+        return view('user.joining-bid')->with(compact('bids'));
+    }
+
+    /**
+     * get fail bids
+     * @return View
+     */
+    public function getFailBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getFailBids($userId);
+        return view('user.fail-bids')->with(compact('bids'));
+    }
+
+    /**
+     * get paying bids
+     * @return View
+     */
+    public function getUnpaidBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getUnpaidBids($userId);
+        return view('user.paying-bids')->with(compact('bids'));
+    }
+
+    /**
+     * get paid bids
+     * @return view
+     */
+    public function getPaidBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getPaidBids($userId);
+        return view('user.paid-bids')->with(compact('bids'));
+    }
+
+    /**
+     * get cancel bids
+     * @return View
+     */
+    public function getCanceledBids() {
+        $userId = Auth::user()->id;
+        $bids = $this->bid->getCanceledBids($userId);
+        return view('user.cancel-bids')->with(compact('bids'));
+    }
+
 }
