@@ -47,6 +47,7 @@ Route::prefix('user')->group(function(){
     Route::get('cancel-bids', 'User\UserController@getCanceledBids')->name('user.cancel-bids');
 });
 
+
 Route::prefix('mocup')->group(function(){
 	Route::get('home', function(){return view('layouts.home');})->name('mocup-home');
 	Route::get('bid-current', function(){return view('bid.bid_current');})->name('mocup-bid-current');
@@ -75,4 +76,5 @@ Route::prefix('admin')->group(function(){
 
 Route::get('bid-current/{id}', 'Product\ProductController@getBid')->name('bid-current');
 Route::post('bid-current/{id}', 'Product\ProductController@postBid')->name('post-bid-amount');
-
+Route::get('bid-list', 'Product\ProductController@index')->name('bid-list');
+Route::get('bid-list/bidding', 'Product\ProductController@getCurrentBids');

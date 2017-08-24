@@ -48,7 +48,8 @@ return [
     'number_item_per_page' => array(
         'success_bids' => 8,
         'current_bids' => 8,
-        'fail-bid' => 8,
+        'fail_bid' => 8,
+        'bid_list' => 8,
     ),
 
     'japan_prefectures' => array(
