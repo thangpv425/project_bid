@@ -19,6 +19,7 @@ class UserBidRepository extends BaseRepository implements UserBidRepositoryInter
         $rows = UserBid::join('users', 'user_bid.user_id', '=', 'users.id')
             ->select(DB::raw('user_bid.*, users.nickname as nickname'))
             ->where('bid_id', '=', $bidId)
+            ->orderBy('id', 'desc')
             ->get();
         return $rows;
     }

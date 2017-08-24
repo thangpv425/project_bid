@@ -28,11 +28,9 @@
 				<div class="bid">
 					@yield('bid')
 					<div class="bid-history">
-						<h3 class="title">Lịch sử đấu giá (15)</h3>
-						<ul class="list-group">
-							@foreach($userBids as $userBid)
-						    	@include('bid.bid-history-item')
-						    @endforeach
+						<h3 class="title">Lịch sử đấu giá </h3>
+						<ul class="list-group" id="bid-history">
+							@include('bid.bid-history-item')
 						</ul>
 					</div>
 				</div>

@@ -16,7 +16,9 @@ $(function(){
             return;
         }
 
-        $.post("/bid-current/"+bidId,
+        var url = $(location).attr('href');
+        console.log(url);
+        $.post(url,
             {
                 user_name: name,
                 user_id: id,
@@ -30,6 +32,7 @@ $(function(){
                     $('.hightest-bid-user').html(respont.data.current_highest_bidder_name);
                     $('.input-bid input[name="amount"]').val("");
                     $('.input-bid input[name="amount"]').attr('placeholder','Đặt giá tối thiểu từ '+respont.data.current_price+' hoặc hơn')
+                    $('#bid-history').html(respont.bid_history);
 				}
             });
 	});
