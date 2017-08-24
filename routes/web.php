@@ -77,3 +77,4 @@ Route::prefix('admin')->group(function(){
 Route::get('bid-current/{id}', 'Product\ProductController@getBid')->name('bid-current');
 Route::post('bid-current/{id}', 'Product\ProductController@postBid')->name('post-bid-amount');
 Route::get('bid-list', 'Product\ProductController@index')->name('bid-list');
+Route::get('bid-list/bidding', 'Product\ProductController@getCurrentBids');
