@@ -32,8 +32,11 @@ class ProductController extends Controller
      */
     public function getBid($id) {
         $bid = $this->bidRepository->find($id);
-        return view('bid.bid_current',['bid'=>$bid]);
+        $userBids = $this->user_bidRepository->getBidHistory($id);
+        //dd($userBids);
+        return view('bid.bid_current')->with(compact('bid'))->with(compact('userBids'));
     }
+
     /**
      * @param $request{user_id, real_bid_amound}
      * @return $current_price
@@ -43,27 +46,40 @@ class ProductController extends Controller
         $bid = $this->bidRepository->getBid($id);
 
         if(!$bid){
+            $userBids = $this->user_bidRepository->getBidHistory($id);
+            $historyView = view('bid.bid-history-item')->with(compact('userBids'))->render();
             return array(
                 'type'=> 'error',
-                'data' => 'bid not valid'
+                'data' => 'bid not valid',
+                'bid_history' => $historyView,
             );
         }
+
 
         //return $bid->current_highest_bidder_id == null ? 1:0;
         if($bid->current_highest_bidder_id == null) {
             if($request->real_bid_amount < $bid->cost_begin){
+
+                $userBids = $this->user_bidRepository->getBidHistory($id);
+                $historyView = view('bid.bid-history-item')->with(compact('userBids'))->render();
+
                 return array(
                     'type'=> 'error',
-                    'data' => 'bid must more than cost begin'
+                    'data' => 'bid must more than cost begin',
+                    'bid_history' => $historyView,
                     );
             }
             //return "nguoi tra gia lan dau";
             $this->amountFirst($bid, $request);
-        } else{
+        } else {
             if ($request->real_bid_amount <  ($bid->current_price+$this->bid_amount_step)) {
+
+                $userBids = $this->user_bidRepository->getBidHistory($id);
+                $historyView = view('bid.bid-history-item')->with(compact('userBids'))->render();
                 return array(
                     'type'=> 'error',
-                    'data' => 'bid must more than current price'
+                    'data' => 'bid must more than current price',
+                    'bid_history' => $historyView,
                 );
             }
 
@@ -86,13 +102,18 @@ class ProductController extends Controller
             }
         }
 
+
+        $userBids = $this->user_bidRepository->getBidHistory($id);
+        $historyView = view('bid.bid-history-item')->with(compact('userBids'))->render();
+
         $respont = array(
             'type' => 'success',
             'data' => array(
                 'current_highest_bidder_id'=> $bid->current_highest_bidder_id,
                 'current_highest_bidder_name'=>$bid->current_highest_bidder_name,
                 'current_price'=> $bid->current_price,
-            )
+            ),
+            'bid_history' => $historyView,
         );
 
         return $respont;

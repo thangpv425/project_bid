@@ -28,11 +28,9 @@
 				<div class="bid">
 					@yield('bid')
 					<div class="bid-history">
-						<h3 class="title">Lịch sử đấu giá (15)</h3>
-						<ul class="list-group">
-							@for($i=1; $i<10; $i++)
-						    	@include('bid.bid-history-item')
-						    @endfor
+						<h3 class="title">Lịch sử đấu giá </h3>
+						<ul class="list-group" id="bid-history">
+							@include('bid.bid-history-item')
 						</ul>
 					</div>
 				</div>
