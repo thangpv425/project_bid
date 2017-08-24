@@ -26,6 +26,22 @@ class ProductController extends Controller
         $this->bid_type_manual = Config::get('constants.bid_amount_type.manual');
         $this->bid_type_auto = Config::get('constants.bid_amount_type.auto');
     }
+
+    public function index(Request $request) {
+
+        $bid_type = $request->input('bid_type');
+        if ($bid_type == null) {
+            $bids = $this->bidRepository->all();
+        } else if ($bid_type == 'bidding') {
+            $bids = $this->bidRepository->getCurrentBids();
+        } else {
+            $bids =$this->bidRepository->getEndBids();
+        }
+
+        return view('bid.bid_list')->with(compact('bids'));
+    }
+
+
     /**
      * @param $id
      * @return Bid

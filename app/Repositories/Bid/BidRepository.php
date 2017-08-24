@@ -12,6 +12,11 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
         parent::__construct($bid);
     }
 
+    public function all() {
+        $bids = Bid::paginate(Config::get('constants.number_item_per_page.bid_list'));
+        return $bids;
+    }
+
     public function getBid($id){
     	$bid = Bid::where(function ($query) use ($id) {
             $query->where('id','=',$id)
@@ -29,6 +34,14 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
         $now = Carbon::now();
         $bids = Bid::where('time_begin', '<', $now)
             ->where('time_end', '>', $now)
+            ->paginate(Config::get('constants.number_item_per_page.success_bids'));
+        return $bids;
+    }
+
+    public function getEndBids() {
+        $now = Carbon::now();
+        $bids = Bid::where('time_begin', '<', $now)
+            ->where('time_end', '<', $now)
             ->paginate(Config::get('constants.number_item_per_page.success_bids'));
         return $bids;
     }
@@ -73,7 +86,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
             ->where('user_bid.user_id', '=', $userId)
             ->where('bids.current_highest_bidder_id', '!=', $userId)
             ->distinct()
-            ->paginate(Config::get('constants.number_item_per_page.fail-bid'));
+            ->paginate(Config::get('constants.number_item_per_page.fail_bid'));
         return $bids;
     }
 
