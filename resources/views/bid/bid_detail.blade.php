@@ -30,9 +30,9 @@
 					<div class="bid-history">
 						<h3 class="title">Lịch sử đấu giá (15)</h3>
 						<ul class="list-group">
-							@for($i=1; $i<10; $i++)
+							@foreach($userBids as $userBid)
 						    	@include('bid.bid-history-item')
-						    @endfor
+						    @endforeach
 						</ul>
 					</div>
 				</div>

@@ -29,7 +29,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
         $now = Carbon::now();
         $bids = Bid::where('time_begin', '<', $now)
             ->where('time_end', '>', $now)
-            ->paginate(Config::get('constants.number_item_per_page.success_bids'));
+            ->paginate(Config::get('constants.number_item_per_page.current_bids'));
         return $bids;
     }
 
@@ -43,7 +43,7 @@ class BidRepository extends BaseRepository implements BidRepositoryInterface {
             ->where('time_end', '<', $now)
             ->where('current_highest_bidder_id', '!=', null)
             ->latest('time_begin')
-            ->paginate(Config::get('constants.number_item_per_page.current_bids'));
+            ->paginate(Config::get('constants.number_item_per_page.success_bids'));
         return $bids;
     }
 

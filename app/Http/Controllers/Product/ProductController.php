@@ -32,8 +32,11 @@ class ProductController extends Controller
      */
     public function getBid($id) {
         $bid = $this->bidRepository->find($id);
-        return view('bid.bid_current',['bid'=>$bid]);
+        $userBids = $this->user_bidRepository->getBidHistory($id);
+
+        return view('bid.bid_current')->with(compact('bid'))->with(compact('userBids'));
     }
+
     /**
      * @param $request{user_id, real_bid_amound}
      * @return $current_price
@@ -92,7 +95,7 @@ class ProductController extends Controller
                 'current_highest_bidder_id'=> $bid->current_highest_bidder_id,
                 'current_highest_bidder_name'=>$bid->current_highest_bidder_name,
                 'current_price'=> $bid->current_price,
-            )
+            ),
         );
 
         return $respont;
